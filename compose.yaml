@@ -1,0 +1,23 @@
+services:
+  gospel-explorers:
+    build: .
+    init: true
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATA_DIR: /data
+      APP_ORIGIN: ${APP_ORIGIN:?Set APP_ORIGIN to the public HTTPS origin}
+      ADMIN_KEY: ${ADMIN_KEY:?Set a random admin key of at least 32 characters}
+      WARDS: ${WARDS:-}
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - explorers-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+volumes:
+  explorers-data:

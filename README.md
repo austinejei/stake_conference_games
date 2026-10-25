@@ -1,65 +1,50 @@
-# My Stake Conference Adventure — complete demonstration source
+# Gospel Explorers
 
-For the Accra Ghana Christiansborg Stake, 31 October–1 November 2026. **Unofficial prototype**, not a Church product.
+Conference activities for the Accra Ghana Christiansborg Stake, 31 October–1 November 2026. An unofficial community activity.
 
-## Start in two minutes
+## Start
 
-Requires **Node.js 20+**. No `npm install` or database service needed.
-
-```bash
-cd christiansborg-adventure
-ADMIN_KEY='replace-with-a-long-random-private-key' npm start
-```
-
-On Windows PowerShell:
+Requires Node.js 24+. No dependencies to install. Copy `.env.example` to `.env`, set a private random ADMIN_KEY of at least 32 characters, then run:
 
 ```powershell
-$env:ADMIN_KEY='replace-with-a-long-random-private-key'
 npm start
 ```
 
-Visit **http://localhost:3000**. Create a nickname (for example Roland), select age 6–8 and Visitor, then play. The moderator area is at the bottom of the same page; enter your private admin key there.
+- Player app: http://localhost:3000
+- Moderation and session controls: http://localhost:3000/admin
+- Participation notice: http://localhost:3000/privacy
+- Health check: http://localhost:3000/api/health
 
-## Features
+## Activities
 
-- Player registration: nickname, age range, optional ward/Visitor.
-- Six scored game categories plus one unscored listening mission (seven total).
-- Fifteen age-adjusted sample question levels per scored game, saved server-side.
-- Shared age-group leaderboard and ward-average rankings (ward shown only after three participants).
-- Word cloud: player-submitted words enter a **pending** moderation queue; moderator approves them.
-- Appreciation: one per player per word; reporting: one per player per word.
-- Three distinct reports move a word to **review** and hide it pending human decision.
-- No public full names, exact ages, comments, or chat.
+Six scored trails, 15 levels each: interlocking crossword grids, selectable word searches, scripture quizzes, meaning matching, gospel picture-tile puzzles with 15 different original illustrations, and ordered scripture/history trails. Seven age groups cover children (3–5, 6–8, 9–11), youth (12–17), YSA (18–35), others (36–55), and seniors (56+). Ages 3–5 have two- or three-word crosswords with starter letters and a visible word bank, plus four-piece pictures with only two pieces to swap. Ages 6–8 have three- or four-word crosswords with an optional word bank and four-piece pictures. Ages 9–11 have five- or six-word crosswords and nine-piece pictures. All 15 crossword word sets are different within each age group; familiar words can reappear in new combinations for practice. Youth and adult groups currently share the advanced puzzle difficulty. Existing 12+ accounts retain their progress and previous difficulty. The history trail has 15 authored sequences; other puzzles vary word selection, layout, or image arrangement. Scripture questions include references shown after completion. Content still requires organizer review.
 
-## Source layout
+The interface follows Ghana time automatically. Saturday leadership (11am–1pm) and adult (1:30–3:30pm) sessions show tailored listening prompts. Sunday general session (10am–noon) pauses scored games and rankings and opens a private listening notebook: stories, ideas, scriptures, drawing, or word spotting. Optional notes and actions are saved only in the current tab. API checks enforce the Sunday pause. Moderators can override the session in /admin and return it to Automatic after previews.
 
-- `server.js` — dependency-free Node HTTP API, scoring, word moderation and JSON persistence.
-- `public/index.html` — responsive app structure.
-- `public/styles.css` — visual design.
-- `public/app.js` — player interactions.
-- `data/store.json` — created automatically; contains player and moderation data. **Do not publish or commit.**
+## Accounts and data
 
-## Important prototype limitations
+Open registration requires a family participation acknowledgement. Under-13 participation is guardian-assisted by acknowledgement, not verified consent. Public leaderboards use generated aliases. Ward choices come only from the configured WARDS list (`|` separated); Visitor is always available. Seven-day HttpOnly sessions survive restarts, and private recovery codes restore progress on other devices. Codes are hashed at rest and can be replaced. Players can sign out or delete their accounts and contributions. Inactive accounts are pruned after 30 days, checked once per minute and on startup.
 
-1. **Not safe for an open public launch with children.** No verified guardian consent, no secure identity, no verified ward membership, no recovery mechanism, and no moderation of nicknames beyond basic character validation.
-2. **Sessions are held in memory** and expire after 12 hours; restarting the server invalidates sessions. Player progress remains on disk, but players cannot securely recover accounts. Add guardian-mediated sign-in before launch.
-3. **Leaderboard is demonstrative**; players can register repeatedly and self-select wards. Implement verified identity, anti-abuse protections, and a clear consent/privacy policy.
-4. **Games are simplified playable question challenges**, not complete interlocking crossword grids, jigsaw puzzles, or fully authored 90-minute curricula. Replace with real engines and reviewed question banks.
-5. Word screening uses a tiny example denylist and is **not sufficient** for a public child-facing site. All new submissions require human approval. Review nicknames and text for personal data as well.
-6. **No real-time websocket updates**; reload word cloud or rankings to see new results.
-7. Server uses a local JSON file and in-memory rate limiting; use a transactional database, authentication, logging, and distributed rate limiting for production.
-8. The listening mission is intentionally not scored. During the Sunday session, encourage printed booklets and listening with families; do not promote competitive gameplay.
-9. Set a strong ADMIN_KEY (minimum 16 characters); never commit it. Use HTTPS and a private moderator-only interface in production.
-10. Decide on data retention, deletion requests, parental consent, and Church/local privacy review before launching at a public domain.
+New words require human approval. Three participants’ reports hide a word for review. Moderators sign in at /admin for one hour and can approve/hide/review words or inspect the complete word list in a searchable table with 20 rows per page. Sender nickname, age range and optional ward are shown only to authenticated moderators. Submission receipts tell players when a word has been sent for review. The admin key is never embedded in public pages.
 
-## Suggested production handoff to the stake technology specialist
+SQLite persists application state and hashed sessions. Existing `data/store.json` is imported on first startup; corrupt existing data stops startup. Keep the entire data directory, `.env`, backups and recovery codes private. Retention and account deletion are logical application operations; operators must also manage backup retention and deletion reconciliation after restore.
 
-- Host a static frontend and secure API behind HTTPS at the approved domain/path.
-- Replace demo registration with guardian-approved pseudonymous accounts and recovery codes.
-- Implement proper crosswords, word search, scripture quiz, matching, picture puzzles and Church history trail.
-- Build a curated, age-specific content management workflow with doctrinal review.
-- Implement audit trails, approval queues, automatic screening plus human moderation, abuse monitoring, and report appeals.
-- Publish a simple parent-facing privacy notice and data-retention policy.
-- Ensure accessibility, mobile performance and low-bandwidth operation.
+## Validation and deployment
 
-The proposed `/dontsleep` path can redirect to `/adventure` if approved. Do not assume either is deployed.
+```powershell
+npm test
+```
+
+Tests cover all 630 age/level/game combinations, crossword connectivity, word-search solvability, schedule boundaries, scoring, recovery, deletion, moderation, session persistence, origin rejection and production cookies.
+
+See [the launch runbook](ops/LAUNCH.md) for the portable Docker/Compose package, HTTPS configuration, persistent disk, backups, restore rehearsal, current limits, and the Friday launch gate. No hosting has been selected or deployed yet. Run one Node process only; multi-instance hosting requires a shared normalized database, distributed rate limits and presence. Production refuses weak admin credentials and requires an HTTPS APP_ORIGIN.
+
+Matching supports mouse/touch line drawing and keyboard/tap connections, with server-checked blue/red feedback. Pair checks do not award points; submitting a completed level does. Correct pairs and completed levels celebrate with silent confetti unless reduced motion is enabled. Recovery codes can be copied directly; the private sketch supports preset and custom colors, preserving existing strokes.
+
+The player interface uses self-hosted Nunito (SIL Open Font License), a pastel backdrop, and CSS-animated gospel names and original vector symbols. Background motion can be paused, follows reduced-motion preferences, stops in hidden tabs, and pauses during Sunday quiet mode. Phone/tablet layouts use larger touch controls and contained puzzle-grid scrolling; no external font service is contacted. Decorative living-leader names were checked against the October 2026 sustaining presentation (linked in ops/CONTENT_REVIEW.md).
+
+Progress and leaderboard share buttons create an original Gospel Explorers PNG badge locally in the browser. The server supplies only the player’s public alias, points, completed level count, milestone title, and optional rank in their group. No private nickname, age, ward, account ID or recovery secret appears in the badge. A preview precedes the user-initiated native share sheet; saving the image and copying the message are fallbacks. Group rank is a current snapshot, uses tied ranks, and is omitted at zero points. Localhost links are omitted from outgoing shares. No image-generation API, external upload or automatic social posting is used.
+
+## Conference announcements
+
+/admin includes a preview-before-send composer for everyone (including anonymous visitors), selected accounts, selected age groups, or selected configured wards/Visitor. Active messages take over recipients’ screens, make the player interface inert, and block challenge/answer/matching APIs until an organizer clears them. Matching multiple announcements displays them together. The SQLite-backed state survives refreshes and server restarts; active messages have no automatic expiry. Online visible pages poll every three seconds and on reconnect; a cached active message remains while clearance cannot be confirmed. Closed/offline devices cannot receive a new message until they reconnect. Admins see active messages, individual clear controls, 30-day cleared history, and distinct-account display receipts (not read receipts). Public message responses omit targeting lists and recipient details. Account deletion removes its targeting/display identifiers.

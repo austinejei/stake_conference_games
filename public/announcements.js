@@ -1,0 +1,14 @@
+'use strict';
+window.ExplorerAnnouncements=(()=>{
+ const screen=document.getElementById('announcementScreen'),messages=document.getElementById('announcementMessages'),connection=document.getElementById('announcementConnection');let pending=false,generation=0,last='',acknowledged=new Set(),previousFocus=null;
+ function show(items){const signature=JSON.stringify(items);if(signature===last)return;last=signature;const active=items.length>0;document.body.classList.toggle('announcement-active',active);document.querySelector('main').inert=active;document.getElementById('shareDialog').inert=active;
+  if(active){if(!screen.hidden){/* Preserve scroll and focus while announcements remain. */}else{previousFocus=document.activeElement;if(document.getElementById('shareDialog').open)document.getElementById('shareDialog').close()}messages.replaceChildren();for(const item of items){const article=document.createElement('article');article.className='announcement-message';const title=document.createElement('h3'),body=document.createElement('p');title.textContent=item.title;body.textContent=item.body;article.append(title,body);messages.appendChild(article)}screen.hidden=false;screen.focus({preventScroll:true})}else{screen.hidden=true;if(previousFocus?.isConnected&&previousFocus.getClientRects().length&&!previousFocus.closest('[inert]'))previousFocus.focus({preventScroll:true});else{const heading=document.querySelector('main h1');heading.tabIndex=-1;heading.focus({preventScroll:true})}previousFocus=null}
+  try{sessionStorage.setItem('explorers:announcements',JSON.stringify(items))}catch{}
+ }
+ async function refresh(){if(document.hidden||pending)return;pending=true;const request=generation;try{const r=await fetch('/api/announcements');if(!r.ok)throw Error('Connection unavailable');const d=await r.json();if(request!==generation)return;show(d.announcements);connection.textContent='This screen stays until an organizer clears the announcement.';const ids=d.announcements.map(m=>m.id).filter(id=>!acknowledged.has(id));if(ids.length){const received=await fetch('/api/announcements/ack',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({ids})});if(received.ok)ids.forEach(id=>acknowledged.add(id))}}catch{if(!screen.hidden)connection.textContent='Reconnecting… This announcement stays on screen until its clearance is confirmed.'}finally{pending=false}}
+ function reset(){generation++;acknowledged.clear();show([]);setTimeout(refresh,0)}
+ screen.addEventListener('keydown',event=>{if(event.key==='Escape'||event.key==='Tab'){event.preventDefault();screen.focus()}});
+ try{const cached=JSON.parse(sessionStorage.getItem('explorers:announcements')||'[]');if(Array.isArray(cached))show(cached)}catch{}
+ refresh();setInterval(refresh,3000);window.addEventListener('online',refresh);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
+ return {refresh,reset};
+})();

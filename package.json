@@ -1,1 +1,1 @@
-{"name":"christiansborg-stake-adventure","version":"1.0.0","private":true,"description":"Stake Conference Adventure demo","scripts":{"start":"node server.js"},"engines":{"node":">=20"}}
+{"name":"gospel-explorers","version":"1.0.0","private":true,"description":"Stake conference games and shared learning","scripts":{"start":"node --env-file-if-exists=.env server.js","test":"node --test"},"engines":{"node":">=24"}}
