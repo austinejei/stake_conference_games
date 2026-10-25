@@ -1,0 +1,1 @@
+{"name":"christiansborg-stake-adventure","version":"1.0.0","private":true,"description":"Stake Conference Adventure demo","scripts":{"start":"node server.js"},"engines":{"node":">=20"}}
