@@ -1,1 +1,81 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" role="img"><title>Sing with joy</title><rect width="600" height="600" fill="#dcebe5"/><circle cx="510" cy="85" r="42" fill="#efd08a"/><g fill="#fffaf0" opacity=".8"><ellipse cx="110" cy="95" rx="65" ry="19"/><ellipse cx="145" cy="77" rx="32" ry="22"/><ellipse cx="530" cy="230" rx="45" ry="15"/></g><path d="M0 420Q140 345 300 415T600 395V600H0Z" fill="#9ab78a"/><path d="M0 485Q210 410 600 470V600H0Z" fill="#729875"/><path d="M95 365Q195 320 300 360Q405 320 505 365V465Q405 420 300 460Q195 420 95 465Z" fill="#fff7dc" stroke="#aab394" stroke-width="7"/><path d="M300 360V460M135 390L260 385M340 385L465 390M135 420L260 415M340 415L465 420" stroke="#9ca68a" stroke-width="7"/><path d="M180 270V135L280 110V245M180 165L280 140" fill="none" stroke="#668d79" stroke-width="17"/><ellipse cx="160" cy="275" rx="31" ry="22" fill="#668d79" transform="rotate(-20 160 275)"/><ellipse cx="260" cy="250" rx="31" ry="22" fill="#668d79" transform="rotate(-20 260 250)"/><path d="M410 285V165L465 200" fill="none" stroke="#d49b6e" stroke-width="18"/><ellipse cx="390" cy="290" rx="31" ry="22" fill="#d49b6e" transform="rotate(-20 390 290)"/><path d="M30 528V500" stroke="#537e55" stroke-width="4"/><circle cx="30" cy="500" r="8" fill="#d7a18b"/><path d="M107 560V532" stroke="#537e55" stroke-width="4"/><circle cx="107" cy="532" r="8" fill="#e6c57e"/><path d="M184 592V564" stroke="#537e55" stroke-width="4"/><circle cx="184" cy="564" r="8" fill="#d7a18b"/><path d="M261 528V500" stroke="#537e55" stroke-width="4"/><circle cx="261" cy="500" r="8" fill="#e6c57e"/><path d="M338 560V532" stroke="#537e55" stroke-width="4"/><circle cx="338" cy="532" r="8" fill="#d7a18b"/><path d="M415 592V564" stroke="#537e55" stroke-width="4"/><circle cx="415" cy="564" r="8" fill="#e6c57e"/><path d="M492 528V500" stroke="#537e55" stroke-width="4"/><circle cx="492" cy="500" r="8" fill="#d7a18b"/><path d="M569 560V532" stroke="#537e55" stroke-width="4"/><circle cx="569" cy="532" r="8" fill="#e6c57e"/></svg>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="600"
+  height="600"
+  viewBox="0 0 600 600"
+  role="img"
+>
+  <title>Sing with joy</title>
+  <rect width="600" height="600" fill="#dcebe5" />
+  <circle cx="510" cy="85" r="42" fill="#efd08a" />
+  <g fill="#fffaf0" opacity=".8">
+    <ellipse cx="110" cy="95" rx="65" ry="19" />
+    <ellipse cx="145" cy="77" rx="32" ry="22" />
+    <ellipse cx="530" cy="230" rx="45" ry="15" />
+  </g>
+  <path d="M0 420Q140 345 300 415T600 395V600H0Z" fill="#9ab78a" />
+  <path d="M0 485Q210 410 600 470V600H0Z" fill="#729875" />
+  <path
+    d="M95 365Q195 320 300 360Q405 320 505 365V465Q405 420 300 460Q195 420 95 465Z"
+    fill="#fff7dc"
+    stroke="#aab394"
+    stroke-width="7"
+  />
+  <path
+    d="M300 360V460M135 390L260 385M340 385L465 390M135 420L260 415M340 415L465 420"
+    stroke="#9ca68a"
+    stroke-width="7"
+  />
+  <path
+    d="M180 270V135L280 110V245M180 165L280 140"
+    fill="none"
+    stroke="#668d79"
+    stroke-width="17"
+  />
+  <ellipse
+    cx="160"
+    cy="275"
+    rx="31"
+    ry="22"
+    fill="#668d79"
+    transform="rotate(-20 160 275)"
+  />
+  <ellipse
+    cx="260"
+    cy="250"
+    rx="31"
+    ry="22"
+    fill="#668d79"
+    transform="rotate(-20 260 250)"
+  />
+  <path
+    d="M410 285V165L465 200"
+    fill="none"
+    stroke="#d49b6e"
+    stroke-width="18"
+  />
+  <ellipse
+    cx="390"
+    cy="290"
+    rx="31"
+    ry="22"
+    fill="#d49b6e"
+    transform="rotate(-20 390 290)"
+  />
+  <path d="M30 528V500" stroke="#537e55" stroke-width="4" />
+  <circle cx="30" cy="500" r="8" fill="#d7a18b" />
+  <path d="M107 560V532" stroke="#537e55" stroke-width="4" />
+  <circle cx="107" cy="532" r="8" fill="#e6c57e" />
+  <path d="M184 592V564" stroke="#537e55" stroke-width="4" />
+  <circle cx="184" cy="564" r="8" fill="#d7a18b" />
+  <path d="M261 528V500" stroke="#537e55" stroke-width="4" />
+  <circle cx="261" cy="500" r="8" fill="#e6c57e" />
+  <path d="M338 560V532" stroke="#537e55" stroke-width="4" />
+  <circle cx="338" cy="532" r="8" fill="#d7a18b" />
+  <path d="M415 592V564" stroke="#537e55" stroke-width="4" />
+  <circle cx="415" cy="564" r="8" fill="#e6c57e" />
+  <path d="M492 528V500" stroke="#537e55" stroke-width="4" />
+  <circle cx="492" cy="500" r="8" fill="#d7a18b" />
+  <path d="M569 560V532" stroke="#537e55" stroke-width="4" />
+  <circle cx="569" cy="532" r="8" fill="#e6c57e" />
+</svg>

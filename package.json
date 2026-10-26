@@ -1,1 +1,13 @@
-{"name":"gospel-explorers","version":"1.0.0","private":true,"description":"Stake conference games and shared learning","scripts":{"start":"node --env-file-if-exists=.env server.js","test":"node --test"},"engines":{"node":">=24"}}
+{
+  "name": "gospel-explorers",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Stake conference games and shared learning",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

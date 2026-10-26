@@ -1,7 +1,52 @@
-'use strict';
-const {test}=require('node:test'),assert=require('node:assert/strict');
-const {shareBadge}=require('../lib/share');
-const player={id:'abcdef-123',nickname:'Private Nickname',publicName:'Explorer SUN123',age:'6-8',ward:'Private Ward',recoveryHash:'private',points:35,progress:{heroes:1,crossword:0}};
-test('badge payload shares only public achievement data',()=>{const result=shareBadge(player,[player]);assert.deepEqual(Object.keys(result).sort(),['alias','completed','groupRank','points','title','total'].sort());assert.equal(result.alias,'Explorer SUN123');assert.equal(result.completed,1);assert.equal(result.title,'First Discovery');assert.equal(result.groupRank,1);assert.equal(JSON.stringify(result).includes('Private'),false)});
-test('group rank handles ties and counts players beyond leaderboard page',()=>{const peers=Array.from({length:30},()=>({...player,points:40}));peers.push({...player,points:35},{...player,age:'18-35',points:999});assert.equal(shareBadge(player,peers).groupRank,31);assert.equal(shareBadge({...player,points:0},peers).groupRank,null)});
-test('milestones reflect earned progress and zero-point badges remain truthful',()=>{for(const [completed,title]of [[0,'Ready to Explore'],[1,'First Discovery'],[5,'Curious Explorer'],[15,'Trailblazer'],[45,'Adventure Champion'],[90,'Quest Complete']])assert.equal(shareBadge({...player,points:completed*30,progress:{count:completed}},[]).title,title)});
+"use strict";
+const { test } = require("node:test"),
+  assert = require("node:assert/strict");
+const { shareBadge } = require("../lib/share");
+const player = {
+  id: "abcdef-123",
+  nickname: "Private Nickname",
+  publicName: "Explorer SUN123",
+  age: "6-8",
+  ward: "Private Ward",
+  recoveryHash: "private",
+  points: 35,
+  progress: { heroes: 1, crossword: 0 },
+};
+test("badge payload shares only public achievement data", () => {
+  const result = shareBadge(player, [player]);
+  assert.deepEqual(
+    Object.keys(result).sort(),
+    ["alias", "completed", "groupRank", "points", "title", "total"].sort(),
+  );
+  assert.equal(result.alias, "Explorer SUN123");
+  assert.equal(result.completed, 1);
+  assert.equal(result.title, "First Discovery");
+  assert.equal(result.groupRank, 1);
+  assert.equal(JSON.stringify(result).includes("Private"), false);
+});
+test("group rank handles ties and counts players beyond leaderboard page", () => {
+  const peers = Array.from({ length: 30 }, () => ({ ...player, points: 40 }));
+  peers.push(
+    { ...player, points: 35 },
+    { ...player, age: "18-35", points: 999 },
+  );
+  assert.equal(shareBadge(player, peers).groupRank, 31);
+  assert.equal(shareBadge({ ...player, points: 0 }, peers).groupRank, null);
+});
+test("milestones reflect earned progress and zero-point badges remain truthful", () => {
+  for (const [completed, title] of [
+    [0, "Ready to Explore"],
+    [1, "First Discovery"],
+    [5, "Curious Explorer"],
+    [15, "Trailblazer"],
+    [45, "Adventure Champion"],
+    [90, "Quest Complete"],
+  ])
+    assert.equal(
+      shareBadge(
+        { ...player, points: completed * 30, progress: { count: completed } },
+        [],
+      ).title,
+      title,
+    );
+});

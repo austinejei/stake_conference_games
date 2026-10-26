@@ -1,1 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" role="img"><title>Helping hands</title><rect width="600" height="600" fill="#e5eee0"/><circle cx="510" cy="85" r="42" fill="#efd08a"/><g fill="#fffaf0" opacity=".8"><ellipse cx="110" cy="95" rx="65" ry="19"/><ellipse cx="145" cy="77" rx="32" ry="22"/><ellipse cx="530" cy="230" rx="45" ry="15"/></g><path d="M0 420Q140 345 300 415T600 395V600H0Z" fill="#9ab78a"/><path d="M0 485Q210 410 600 470V600H0Z" fill="#729875"/><path d="M35 390L150 325L270 385L250 465L120 440Z" fill="#d4a072"/><path d="M565 390L450 325L330 385L350 465L480 440Z" fill="#ae7958"/><path d="M140 325Q160 270 205 315L290 360L250 410L190 375" fill="#d4a072"/><path d="M460 325Q440 270 395 315L310 360L350 410L410 375" fill="#ae7958"/><path d="M300 215C200 115 100 260 300 360C500 260 400 115 300 215" fill="#cf727b"/><path d="M300 125V85M175 165L145 135M425 165L455 135" stroke="#e7be63" stroke-width="12" stroke-linecap="round"/><path d="M30 528V500" stroke="#537e55" stroke-width="4"/><circle cx="30" cy="500" r="8" fill="#d7a18b"/><path d="M107 560V532" stroke="#537e55" stroke-width="4"/><circle cx="107" cy="532" r="8" fill="#e6c57e"/><path d="M184 592V564" stroke="#537e55" stroke-width="4"/><circle cx="184" cy="564" r="8" fill="#d7a18b"/><path d="M261 528V500" stroke="#537e55" stroke-width="4"/><circle cx="261" cy="500" r="8" fill="#e6c57e"/><path d="M338 560V532" stroke="#537e55" stroke-width="4"/><circle cx="338" cy="532" r="8" fill="#d7a18b"/><path d="M415 592V564" stroke="#537e55" stroke-width="4"/><circle cx="415" cy="564" r="8" fill="#e6c57e"/><path d="M492 528V500" stroke="#537e55" stroke-width="4"/><circle cx="492" cy="500" r="8" fill="#d7a18b"/><path d="M569 560V532" stroke="#537e55" stroke-width="4"/><circle cx="569" cy="532" r="8" fill="#e6c57e"/></svg>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="600"
+  height="600"
+  viewBox="0 0 600 600"
+  role="img"
+>
+  <title>Helping hands</title>
+  <rect width="600" height="600" fill="#e5eee0" />
+  <circle cx="510" cy="85" r="42" fill="#efd08a" />
+  <g fill="#fffaf0" opacity=".8">
+    <ellipse cx="110" cy="95" rx="65" ry="19" />
+    <ellipse cx="145" cy="77" rx="32" ry="22" />
+    <ellipse cx="530" cy="230" rx="45" ry="15" />
+  </g>
+  <path d="M0 420Q140 345 300 415T600 395V600H0Z" fill="#9ab78a" />
+  <path d="M0 485Q210 410 600 470V600H0Z" fill="#729875" />
+  <path d="M35 390L150 325L270 385L250 465L120 440Z" fill="#d4a072" />
+  <path d="M565 390L450 325L330 385L350 465L480 440Z" fill="#ae7958" />
+  <path d="M140 325Q160 270 205 315L290 360L250 410L190 375" fill="#d4a072" />
+  <path d="M460 325Q440 270 395 315L310 360L350 410L410 375" fill="#ae7958" />
+  <path
+    d="M300 215C200 115 100 260 300 360C500 260 400 115 300 215"
+    fill="#cf727b"
+  />
+  <path
+    d="M300 125V85M175 165L145 135M425 165L455 135"
+    stroke="#e7be63"
+    stroke-width="12"
+    stroke-linecap="round"
+  />
+  <path d="M30 528V500" stroke="#537e55" stroke-width="4" />
+  <circle cx="30" cy="500" r="8" fill="#d7a18b" />
+  <path d="M107 560V532" stroke="#537e55" stroke-width="4" />
+  <circle cx="107" cy="532" r="8" fill="#e6c57e" />
+  <path d="M184 592V564" stroke="#537e55" stroke-width="4" />
+  <circle cx="184" cy="564" r="8" fill="#d7a18b" />
+  <path d="M261 528V500" stroke="#537e55" stroke-width="4" />
+  <circle cx="261" cy="500" r="8" fill="#e6c57e" />
+  <path d="M338 560V532" stroke="#537e55" stroke-width="4" />
+  <circle cx="338" cy="532" r="8" fill="#d7a18b" />
+  <path d="M415 592V564" stroke="#537e55" stroke-width="4" />
+  <circle cx="415" cy="564" r="8" fill="#e6c57e" />
+  <path d="M492 528V500" stroke="#537e55" stroke-width="4" />
+  <circle cx="492" cy="500" r="8" fill="#d7a18b" />
+  <path d="M569 560V532" stroke="#537e55" stroke-width="4" />
+  <circle cx="569" cy="532" r="8" fill="#e6c57e" />
+</svg>

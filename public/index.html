@@ -1,1 +1,442 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Gospel Explorers</title><link rel="preload" href="/fonts/nunito-variable.ttf" as="font" type="font/ttf" crossorigin><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/playful.css"></head><body><section id="announcementScreen" class="announcement-screen" role="alertdialog" aria-modal="true" aria-labelledby="announcementHeading" tabindex="-1" hidden><div class="announcement-panel"><div class="announcement-icon" aria-hidden="true">📣</div><div class="eyebrow">A MOMENT TOGETHER</div><h2 id="announcementHeading">An announcement from the organizers</h2><p class="muted">Please pause and give this your attention. Your game progress is safe.</p><div id="announcementMessages"></div><p id="announcementConnection" role="status">This screen stays until an organizer clears the announcement.</p></div></section><div id="gospelSky" class="gospel-sky" aria-hidden="true"></div><main><div class="topbar"><a class="brand" href="/">✦ Gospel Explorers</a><div class="topbar-meta"><span>31 OCT – 1 NOV 2026</span><button id="toggleBackground" class="motion-toggle" type="button" aria-pressed="false">Pause background</button></div></div><header><div class="hero-doodles" aria-hidden="true"><span>✦</span><span>✧</span><span>♡</span><span>✦</span></div><div class="eyebrow">Accra Ghana Christiansborg Stake • 2026</div><h1>Your next adventure<br><span>starts with faith.</span></h1><p>Play a little. Learn something. Grow together.</p><div class="presence" role="status" aria-live="polite"><span class="presence-dot" aria-hidden="true"></span><span id="onlineCount">Connecting to fellow explorers...</span></div><p class="presence-hint">Adventure together &bull; Players active in the last 90 seconds</p></header><section id="conference" class="card conference-card" aria-labelledby="sessionTitle"><div class="session-heading"><span class="eyebrow" id="sessionBadge">CONFERENCE WEEKEND</span><span class="session-time" id="sessionTime">All times Ghana · GMT</span></div><h2 id="sessionTitle">Three sessions. One shared purpose.</h2><p id="sessionPrompt" class="muted">Get ready to learn, listen, and grow together.</p><div id="sessionSchedule" class="session-schedule"></div></section><section id="registration" class="card"><div class="eyebrow">YOUR QUEST STARTS HERE</div><h2>Ready, explorer?</h2><p class="muted">Pick a nickname. Find your challenge. Make conference your own.</p><form id="joinForm"><label>Nickname <input id="nickname" required minlength="2" maxlength="20" autocomplete="off" placeholder="Roland"></label><label>Age range <select id="age"><option value="3-5">3–5</option><option value="6-8" selected>6–8</option><option value="9-11">9–11</option><option value="12-17">Youth · 12–17</option><option value="18-35">YSA · 18–35</option><option value="36-55">Others · 36–55</option><option value="56+">Seniors · 56+</option></select></label><label>Ward <select id="ward"><option value="Visitor">Visitor / Prefer not to say</option></select></label><p class="muted">Use a nickname, not your full name. Public rankings use a separate Explorer alias.</p><label class="check-label"><input id="acknowledged" type="checkbox" required><span>I have read the <a href="/privacy" target="_blank" rel="noopener">participation and privacy notice</a>. If I am under 13, my parent or guardian is helping me join.</span></label><button id="join" class="primary" type="submit">Let’s go <span aria-hidden="true">↗</span></button><p id="joinStatus" role="status"></p></form><details class="recover-panel"><summary>Already exploring? Restore your progress</summary><form id="recoverForm"><label>Private recovery code<input id="recoveryInput" autocomplete="off" placeholder="xxxx-xxxx-xxxx-xxxx-xxxx-xxxx" required></label><button class="primary" id="recoverButton">Restore my adventure</button><p id="recoverStatus" role="status"></p></form></details><div class="welcome-tags"><span>6 game trails</span><span>90 levels</span><span>One shared adventure</span></div></section><section id="dashboard" hidden><aside id="recoveryNotice" class="card recovery-notice" hidden><h2>Keep your adventure safe.</h2><p>This private code restores your progress on another device. Save it with a parent or guardian. Anyone with it can access your account.</p><code id="recoveryCode"></code><div class="row"><button id="copyRecovery">Copy code</button><button id="dismissRecovery">I have saved it</button></div><p id="copyRecoveryStatus" role="status"></p></aside><div class="card"><div class="row between"><div><h2 id="greeting"></h2><p id="profile" class="muted"></p></div><div class="points-share"><div class="points">⭐ <span id="points">0</span> pts</div><button id="sharePoints" class="share-trigger">↗ Share my progress</button></div></div><div class="progress" role="progressbar" aria-label="Quest progress" aria-valuemin="0" aria-valuemax="90" aria-valuenow="0"><div id="progressbar"></div></div><p id="progressText" class="muted"></p></div><details class="account-panel"><summary>My account &amp; privacy</summary><p id="publicAlias" class="muted"></p><div class="row"><button id="replaceRecovery">Create a new recovery code</button><button id="logout">Sign out</button></div><p class="muted">A new code replaces your old one. Save a code before signing out.</p><details><summary>Delete my account</summary><p>Removes your profile, points, submitted words, appreciations, and reports. This cannot be undone.</p><form id="deleteForm"><label>Type DELETE to confirm<input id="deleteConfirm" required pattern="DELETE" autocomplete="off"></label><button class="danger">Delete my account</button></form></details><p id="accountStatus" role="status"></p></details><nav><button data-tab="games" class="active">🎮 Games</button><button data-tab="listen">👂 Listening</button><button data-tab="cloud">☁️ Word cloud</button><button data-tab="rank">🏆 Rankings</button></nav><section id="games" class="panel"><div id="quietGames" class="card soft" hidden><h2>Time to listen together.</h2><p>Scored games return at noon. You can mark the gospel words you hear in the listening activities.</p><button id="goListen">Open listening activities</button></div><div id="gameLibrary"><div class="eyebrow">PICK YOUR PATH</div><h2>A little curiosity. A new discovery.</h2><p class="muted">Choose a trail and collect points, one challenge at a time.</p><div id="gameCards" class="game-grid"></div><div id="challenge" class="card" hidden></div><div class="card soft"><h3>⏸ Listening comes first</h3><p>During the Sunday general session, put your device away and listen with your family. Continue playing afterward.</p></div></div></section><section id="listen" class="panel" hidden><div class="card listening-notebook"><div class="eyebrow">YOUR PRIVATE LISTENING NOTEBOOK</div><div class="row between"><h2 id="listeningTitle">A little space to notice more.</h2><button id="returnToGames">Back to games</button></div><p id="listeningPrompt">Choose a quiet activity. You can switch or stop whenever you like.</p><p class="muted">Your notebook is just for you. The word cloud is where everyone shares words after moderator review.</p><div id="listeningMissions" class="listening-missions" role="group" aria-label="Choose a listening activity"></div><section id="listeningActivity" class="listening-activity" aria-labelledby="activityTitle"><h3 id="activityTitle"></h3><p id="activityPrompt"></p><div id="listeningWords" class="listening-grid" hidden></div><div id="sketchArea" hidden><div class="sketch-toolbar"><div id="sketchPalette" class="sketch-palette" role="group" aria-label="Pen colors"></div><label class="sketch-color-label">Custom color<input id="sketchColor" type="color" value="#315e4b"></label></div><canvas id="listeningSketch" width="720" height="340" aria-label="Private drawing pad. You can also describe your picture in the note below."></canvas><div class="row"><button id="undoSketch">Undo stroke</button><button id="clearSketch">Clear drawing</button></div><p class="muted">Draw with a finger, mouse, or pen. Prefer paper? Sketch on your listening sheet instead.</p></div><label><span id="notebookLabel">Something I want to remember (optional)</span><textarea id="reflection" maxlength="2000" placeholder="A story, a thought, a question… You can leave this blank."></textarea></label><details id="actionDetails"><summary>Want to try something this week? (optional)</summary><label>One small thing I could try<textarea id="listeningAction" maxlength="1000" placeholder="Only if something comes to mind…"></textarea></label></details><div class="row notebook-actions"><button id="reflect">Keep this moment</button><button id="nextListening">Try another activity</button><button id="printListening">Print my listening sheet</button></div><p id="reflectionResult" role="status"></p></section><p class="muted">No points, timers, or required answers. Notes and drawings stay in this tab for this session; they are not sent to moderators or shared in the cloud.</p></div></section><section id="cloud" class="panel" hidden><div class="card"><h2>☁️ Words We Heard</h2><p class="muted">Appreciate meaningful gospel words or report a concern. New words require moderator approval before appearing.</p><div id="cloudWords" class="cloud"></div><div id="selectedWord" class="soft pad" hidden></div><form id="wordForm"><label>Suggest a gospel word or short phrase <input id="newWord" required maxlength="30" placeholder="e.g. Covenant"></label><button id="submitWord" class="primary" type="submit">Send for review</button></form><div id="wordReceipt" class="submission-receipt" role="status" aria-live="polite" tabindex="-1" hidden><strong id="wordReceiptTitle"></strong><p id="wordReceiptMessage"></p></div><p id="cloudStatus" role="status"></p></div></section><section id="rank" class="panel" hidden><div class="card"><div class="row between"><h2>🏆 Friendly leaderboard</h2><button id="shareLeaderboard" class="share-trigger">↗ Share my badge</button></div><p class="muted">Nickname-only rankings. Ward averages appear only when at least three players have joined that ward.</p><h3>My age group</h3><div id="playerRanks"></div><h3>Ward averages</h3><div id="wardRanks"></div></div></section></section><footer><a href="/privacy">Participation &amp; privacy</a><br>Made for learning. Built for belonging.<br>Accra Ghana Christiansborg Stake · Unofficial community activity</footer></main><dialog id="shareDialog" class="share-dialog" aria-labelledby="shareTitle"><div class="row between"><div><div class="eyebrow">YOUR ADVENTURE, YOUR MOMENT</div><h2 id="shareTitle">A little progress. A big smile.</h2></div><button id="closeShare" aria-label="Close badge preview">✕</button></div><p class="muted">Share your Explorer alias and progress. Your private nickname, age, ward, and recovery code are left out.</p><div id="sharePreview" class="badge-preview"></div><div class="share-options"><button id="sendBadge" class="primary" disabled>Share badge</button><button id="saveBadge" disabled>Save image</button><button id="copyBadgeText" disabled>Copy message</button></div><p id="shareStatus" role="status" aria-live="polite">Creating your badge…</p></dialog><script src="/announcements.js" defer></script><script src="/sharing.js" defer></script><script src="/background.js" defer></script><script src="/celebration.js" defer></script><script src="/listening.js" defer></script><script src="/matching.js" defer></script><script src="/games.js" defer></script><script src="/app.js" defer></script></body></html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>Gospel Explorers</title>
+    <link
+      rel="preload"
+      href="/fonts/nunito-variable.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/playful.css" />
+  </head>
+  <body>
+    <section
+      id="announcementScreen"
+      class="announcement-screen"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="announcementHeading"
+      tabindex="-1"
+      hidden
+    >
+      <div class="announcement-panel">
+        <div class="announcement-icon" aria-hidden="true">📣</div>
+        <div class="eyebrow">A MOMENT TOGETHER</div>
+        <h2 id="announcementHeading">An announcement from the organizers</h2>
+        <p class="muted">
+          Please pause and give this your attention. Your game progress is safe.
+        </p>
+        <div id="announcementMessages"></div>
+        <p id="announcementConnection" role="status">
+          This screen stays until an organizer clears the announcement.
+        </p>
+      </div>
+    </section>
+    <div id="gospelSky" class="gospel-sky" aria-hidden="true"></div>
+    <main>
+      <div class="topbar">
+        <a class="brand" href="/">✦ Gospel Explorers</a>
+        <div class="topbar-meta">
+          <span>31 OCT – 1 NOV 2026</span
+          ><button
+            id="toggleBackground"
+            class="motion-toggle"
+            type="button"
+            aria-pressed="false"
+          >
+            Pause background
+          </button>
+        </div>
+      </div>
+      <header>
+        <div class="hero-doodles" aria-hidden="true">
+          <span>✦</span><span>✧</span><span>♡</span><span>✦</span>
+        </div>
+        <div class="eyebrow">Accra Ghana Christiansborg Stake • 2026</div>
+        <h1>Your next adventure<br /><span>starts with faith.</span></h1>
+        <p>Play a little. Learn something. Grow together.</p>
+        <div class="presence" role="status" aria-live="polite">
+          <span class="presence-dot" aria-hidden="true"></span
+          ><span id="onlineCount">Connecting to fellow explorers...</span>
+        </div>
+        <p class="presence-hint">
+          Adventure together &bull; Players active in the last 90 seconds
+        </p>
+      </header>
+      <section
+        id="conference"
+        class="card conference-card"
+        aria-labelledby="sessionTitle"
+      >
+        <div class="session-heading">
+          <span class="eyebrow" id="sessionBadge">CONFERENCE WEEKEND</span
+          ><span class="session-time" id="sessionTime"
+            >All times Ghana · GMT</span
+          >
+        </div>
+        <h2 id="sessionTitle">Three sessions. One shared purpose.</h2>
+        <p id="sessionPrompt" class="muted">
+          Get ready to learn, listen, and grow together.
+        </p>
+        <div id="sessionSchedule" class="session-schedule"></div>
+      </section>
+      <section id="registration" class="card">
+        <div class="eyebrow">YOUR QUEST STARTS HERE</div>
+        <h2>Ready, explorer?</h2>
+        <p class="muted">
+          Pick a nickname. Find your challenge. Make conference your own.
+        </p>
+        <form id="joinForm">
+          <label
+            >Nickname
+            <input
+              id="nickname"
+              required
+              minlength="2"
+              maxlength="20"
+              autocomplete="off"
+              placeholder="Roland" /></label
+          ><label
+            >Age range
+            <select id="age">
+              <option value="3-5">3–5</option>
+              <option value="6-8" selected>6–8</option>
+              <option value="9-11">9–11</option>
+              <option value="12-17">Youth · 12–17</option>
+              <option value="18-35">YSA · 18–35</option>
+              <option value="36-55">Others · 36–55</option>
+              <option value="56+">Seniors · 56+</option>
+            </select></label
+          ><label
+            >Ward
+            <select id="ward">
+              <option value="Visitor">Visitor / Prefer not to say</option>
+            </select></label
+          >
+          <p class="muted">
+            Use a nickname, not your full name. Public rankings use a separate
+            Explorer alias.
+          </p>
+          <label class="check-label"
+            ><input id="acknowledged" type="checkbox" required /><span
+              >I have read the
+              <a href="/privacy" target="_blank" rel="noopener"
+                >participation and privacy notice</a
+              >. If I am under 13, my parent or guardian is helping me
+              join.</span
+            ></label
+          ><button id="join" class="primary" type="submit">
+            Let’s go <span aria-hidden="true">↗</span>
+          </button>
+          <p id="joinStatus" role="status"></p>
+        </form>
+        <details class="recover-panel">
+          <summary>Already exploring? Restore your progress</summary>
+          <form id="recoverForm">
+            <label
+              >Private recovery code<input
+                id="recoveryInput"
+                autocomplete="off"
+                placeholder="xxxx-xxxx-xxxx-xxxx-xxxx-xxxx"
+                required /></label
+            ><button class="primary" id="recoverButton">
+              Restore my adventure
+            </button>
+            <p id="recoverStatus" role="status"></p>
+          </form>
+        </details>
+        <div class="welcome-tags">
+          <span>6 game trails</span><span>90 levels</span
+          ><span>One shared adventure</span>
+        </div>
+      </section>
+      <section id="dashboard" hidden>
+        <aside id="recoveryNotice" class="card recovery-notice" hidden>
+          <h2>Keep your adventure safe.</h2>
+          <p>
+            This private code restores your progress on another device. Save it
+            with a parent or guardian. Anyone with it can access your account.
+          </p>
+          <code id="recoveryCode"></code>
+          <div class="row">
+            <button id="copyRecovery">Copy code</button
+            ><button id="dismissRecovery">I have saved it</button>
+          </div>
+          <p id="copyRecoveryStatus" role="status"></p>
+        </aside>
+        <div class="card">
+          <div class="row between">
+            <div>
+              <h2 id="greeting"></h2>
+              <p id="profile" class="muted"></p>
+            </div>
+            <div class="points-share">
+              <div class="points">⭐ <span id="points">0</span> pts</div>
+              <button id="sharePoints" class="share-trigger">
+                ↗ Share my progress
+              </button>
+            </div>
+          </div>
+          <div
+            class="progress"
+            role="progressbar"
+            aria-label="Quest progress"
+            aria-valuemin="0"
+            aria-valuemax="90"
+            aria-valuenow="0"
+          >
+            <div id="progressbar"></div>
+          </div>
+          <p id="progressText" class="muted"></p>
+        </div>
+        <details class="account-panel">
+          <summary>My account &amp; privacy</summary>
+          <p id="publicAlias" class="muted"></p>
+          <div class="row">
+            <button id="replaceRecovery">Create a new recovery code</button
+            ><button id="logout">Sign out</button>
+          </div>
+          <p class="muted">
+            A new code replaces your old one. Save a code before signing out.
+          </p>
+          <details>
+            <summary>Delete my account</summary>
+            <p>
+              Removes your profile, points, submitted words, appreciations, and
+              reports. This cannot be undone.
+            </p>
+            <form id="deleteForm">
+              <label
+                >Type DELETE to confirm<input
+                  id="deleteConfirm"
+                  required
+                  pattern="DELETE"
+                  autocomplete="off" /></label
+              ><button class="danger">Delete my account</button>
+            </form>
+          </details>
+          <p id="accountStatus" role="status"></p>
+        </details>
+        <nav>
+          <button data-tab="games" class="active">🎮 Games</button
+          ><button data-tab="listen">👂 Listening</button
+          ><button data-tab="cloud">☁️ Word cloud</button
+          ><button data-tab="rank">🏆 Rankings</button>
+        </nav>
+        <section id="games" class="panel">
+          <div id="quietGames" class="card soft" hidden>
+            <h2>Time to listen together.</h2>
+            <p>
+              Scored games return at noon. You can mark the gospel words you
+              hear in the listening activities.
+            </p>
+            <button id="goListen">Open listening activities</button>
+          </div>
+          <div id="gameLibrary">
+            <div class="eyebrow">PICK YOUR PATH</div>
+            <h2>A little curiosity. A new discovery.</h2>
+            <p class="muted">
+              Choose a trail and collect points, one challenge at a time.
+            </p>
+            <div id="gameCards" class="game-grid"></div>
+            <div id="challenge" class="card" hidden></div>
+            <div class="card soft">
+              <h3>⏸ Listening comes first</h3>
+              <p>
+                During the Sunday general session, put your device away and
+                listen with your family. Continue playing afterward.
+              </p>
+            </div>
+          </div>
+        </section>
+        <section id="listen" class="panel" hidden>
+          <div class="card listening-notebook">
+            <div class="eyebrow">YOUR PRIVATE LISTENING NOTEBOOK</div>
+            <div class="row between">
+              <h2 id="listeningTitle">A little space to notice more.</h2>
+              <button id="returnToGames">Back to games</button>
+            </div>
+            <p id="listeningPrompt">
+              Choose a quiet activity. You can switch or stop whenever you like.
+            </p>
+            <p class="muted">
+              Your notebook is just for you. The word cloud is where everyone
+              shares words after moderator review.
+            </p>
+            <div
+              id="listeningMissions"
+              class="listening-missions"
+              role="group"
+              aria-label="Choose a listening activity"
+            ></div>
+            <section
+              id="listeningActivity"
+              class="listening-activity"
+              aria-labelledby="activityTitle"
+            >
+              <h3 id="activityTitle"></h3>
+              <p id="activityPrompt"></p>
+              <div id="listeningWords" class="listening-grid" hidden></div>
+              <div id="sketchArea" hidden>
+                <div class="sketch-toolbar">
+                  <div
+                    id="sketchPalette"
+                    class="sketch-palette"
+                    role="group"
+                    aria-label="Pen colors"
+                  ></div>
+                  <label class="sketch-color-label"
+                    >Custom color<input
+                      id="sketchColor"
+                      type="color"
+                      value="#315e4b"
+                  /></label>
+                </div>
+                <canvas
+                  id="listeningSketch"
+                  width="720"
+                  height="340"
+                  aria-label="Private drawing pad. You can also describe your picture in the note below."
+                ></canvas>
+                <div class="row">
+                  <button id="undoSketch">Undo stroke</button
+                  ><button id="clearSketch">Clear drawing</button>
+                </div>
+                <p class="muted">
+                  Draw with a finger, mouse, or pen. Prefer paper? Sketch on
+                  your listening sheet instead.
+                </p>
+              </div>
+              <label
+                ><span id="notebookLabel"
+                  >Something I want to remember (optional)</span
+                ><textarea
+                  id="reflection"
+                  maxlength="2000"
+                  placeholder="A story, a thought, a question… You can leave this blank."
+                ></textarea>
+              </label>
+              <details id="actionDetails">
+                <summary>Want to try something this week? (optional)</summary>
+                <label
+                  >One small thing I could try<textarea
+                    id="listeningAction"
+                    maxlength="1000"
+                    placeholder="Only if something comes to mind…"
+                  ></textarea>
+                </label>
+              </details>
+              <div class="row notebook-actions">
+                <button id="reflect">Keep this moment</button
+                ><button id="nextListening">Try another activity</button
+                ><button id="printListening">Print my listening sheet</button>
+              </div>
+              <p id="reflectionResult" role="status"></p>
+            </section>
+            <p class="muted">
+              No points, timers, or required answers. Notes and drawings stay in
+              this tab for this session; they are not sent to moderators or
+              shared in the cloud.
+            </p>
+          </div>
+        </section>
+        <section id="cloud" class="panel" hidden>
+          <div class="card">
+            <h2>☁️ Words We Heard</h2>
+            <p class="muted">
+              Appreciate meaningful gospel words or report a concern. New words
+              require moderator approval before appearing.
+            </p>
+            <div id="cloudWords" class="cloud"></div>
+            <div id="selectedWord" class="soft pad" hidden></div>
+            <form id="wordForm">
+              <label
+                >Suggest a gospel word or short phrase
+                <input
+                  id="newWord"
+                  required
+                  maxlength="30"
+                  placeholder="e.g. Covenant" /></label
+              ><button id="submitWord" class="primary" type="submit">
+                Send for review
+              </button>
+            </form>
+            <div
+              id="wordReceipt"
+              class="submission-receipt"
+              role="status"
+              aria-live="polite"
+              tabindex="-1"
+              hidden
+            >
+              <strong id="wordReceiptTitle"></strong>
+              <p id="wordReceiptMessage"></p>
+            </div>
+            <p id="cloudStatus" role="status"></p>
+          </div>
+        </section>
+        <section id="rank" class="panel" hidden>
+          <div class="card">
+            <div class="row between">
+              <h2>🏆 Friendly leaderboard</h2>
+              <button id="shareLeaderboard" class="share-trigger">
+                ↗ Share my badge
+              </button>
+            </div>
+            <p class="muted">
+              Nickname-only rankings. Ward averages appear only when at least
+              three players have joined that ward.
+            </p>
+            <h3>My age group</h3>
+            <div id="playerRanks"></div>
+            <h3>Ward averages</h3>
+            <div id="wardRanks"></div>
+          </div>
+        </section>
+      </section>
+      <footer>
+        <a href="/privacy">Participation &amp; privacy</a><br />Made for
+        learning. Built for belonging.<br />Accra Ghana Christiansborg Stake ·
+        Unofficial community activity
+      </footer>
+    </main>
+    <dialog id="shareDialog" class="share-dialog" aria-labelledby="shareTitle">
+      <div class="row between">
+        <div>
+          <div class="eyebrow">YOUR ADVENTURE, YOUR MOMENT</div>
+          <h2 id="shareTitle">A little progress. A big smile.</h2>
+        </div>
+        <button id="closeShare" aria-label="Close badge preview">✕</button>
+      </div>
+      <p class="muted">
+        Share your Explorer alias and progress. Your private nickname, age,
+        ward, and recovery code are left out.
+      </p>
+      <div id="sharePreview" class="badge-preview"></div>
+      <div class="share-options">
+        <button id="sendBadge" class="primary" disabled>Share badge</button
+        ><button id="saveBadge" disabled>Save image</button
+        ><button id="copyBadgeText" disabled>Copy message</button>
+      </div>
+      <p id="shareStatus" role="status" aria-live="polite">
+        Creating your badge…
+      </p>
+    </dialog>
+    <script src="/announcements.js" defer></script>
+    <script src="/sharing.js" defer></script>
+    <script src="/background.js" defer></script>
+    <script src="/celebration.js" defer></script>
+    <script src="/listening.js" defer></script>
+    <script src="/matching.js" defer></script>
+    <script src="/games.js" defer></script>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

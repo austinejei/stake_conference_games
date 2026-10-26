@@ -1,1 +1,47 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" role="img"><title>A rainbow of hope</title><rect width="600" height="600" fill="#dcebe5"/><circle cx="100" cy="85" r="42" fill="#efd08a"/><g fill="#fffaf0" opacity=".8"><ellipse cx="455" cy="95" rx="65" ry="19"/><ellipse cx="420" cy="77" rx="32" ry="22"/><ellipse cx="70" cy="230" rx="45" ry="15"/></g><path d="M0 420Q140 345 300 415T600 395V600H0Z" fill="#9ab78a"/><path d="M0 485Q210 410 600 470V600H0Z" fill="#729875"/><g fill="none" stroke-width="16"><path d="M130 245A170 170 0 0 1 470 245" stroke="#d79184"/><path d="M148 245A152 152 0 0 1 452 245" stroke="#e6c373"/><path d="M166 245A134 134 0 0 1 434 245" stroke="#8ab397"/></g><path d="M70 340H530L465 445H160Z" fill="#a97344" stroke="#765437" stroke-width="8"/><path d="M195 340V245H400V340" fill="#d2aa6e"/><path d="M165 250L295 175L425 250" fill="#8c6240"/><g fill="#45675a"><circle cx="175" cy="365" r="17"/><circle cx="255" cy="365" r="17"/><circle cx="335" cy="365" r="17"/><circle cx="415" cy="365" r="17"/></g><path d="M0 455Q70 420 140 455T280 455T420 455T600 455V600H0Z" fill="#76b6c1"/><path d="M0 520Q70 485 140 520T280 520T420 520T600 520" stroke="#d7eeee" stroke-width="13" fill="none"/></svg>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="600"
+  height="600"
+  viewBox="0 0 600 600"
+  role="img"
+>
+  <title>A rainbow of hope</title>
+  <rect width="600" height="600" fill="#dcebe5" />
+  <circle cx="100" cy="85" r="42" fill="#efd08a" />
+  <g fill="#fffaf0" opacity=".8">
+    <ellipse cx="455" cy="95" rx="65" ry="19" />
+    <ellipse cx="420" cy="77" rx="32" ry="22" />
+    <ellipse cx="70" cy="230" rx="45" ry="15" />
+  </g>
+  <path d="M0 420Q140 345 300 415T600 395V600H0Z" fill="#9ab78a" />
+  <path d="M0 485Q210 410 600 470V600H0Z" fill="#729875" />
+  <g fill="none" stroke-width="16">
+    <path d="M130 245A170 170 0 0 1 470 245" stroke="#d79184" />
+    <path d="M148 245A152 152 0 0 1 452 245" stroke="#e6c373" />
+    <path d="M166 245A134 134 0 0 1 434 245" stroke="#8ab397" />
+  </g>
+  <path
+    d="M70 340H530L465 445H160Z"
+    fill="#a97344"
+    stroke="#765437"
+    stroke-width="8"
+  />
+  <path d="M195 340V245H400V340" fill="#d2aa6e" />
+  <path d="M165 250L295 175L425 250" fill="#8c6240" />
+  <g fill="#45675a">
+    <circle cx="175" cy="365" r="17" />
+    <circle cx="255" cy="365" r="17" />
+    <circle cx="335" cy="365" r="17" />
+    <circle cx="415" cy="365" r="17" />
+  </g>
+  <path
+    d="M0 455Q70 420 140 455T280 455T420 455T600 455V600H0Z"
+    fill="#76b6c1"
+  />
+  <path
+    d="M0 520Q70 485 140 520T280 520T420 520T600 520"
+    stroke="#d7eeee"
+    stroke-width="13"
+    fill="none"
+  />
+</svg>

@@ -1,1 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600"><rect width="600" height="600" fill="#dceee8"/><circle cx="490" cy="100" r="48" fill="#f6d98f"/><path d="M0 400Q150 320 300 410T600 390V600H0Z" fill="#88ad83"/><path d="M0 480Q210 410 600 480V600H0Z" fill="#477f62"/><path d="M225 600L270 425H330L395 600" fill="#e5d6b8"/><path d="M120 430V270H480V430Z" fill="#f9f6e8"/><path d="M100 270L300 190L500 270Z" fill="#d6cfb8"/><path d="M260 240V130H340V240" fill="#fffdf2"/><path d="M248 140L300 85L352 140Z" fill="#ded5b8"/><path d="M293 90V48H307V90Z" fill="#d1ac53"/><path d="M300 45L323 62H300Z" fill="#e8c568"/><path d="M270 430V345Q300 305 330 345V430" fill="#4a736b"/><g fill="#9ebfba"><path d="M150 310H180V370H150Z"/><path d="M210 310H240V370H210Z"/><path d="M360 310H390V370H360Z"/><path d="M420 310H450V370H420Z"/><path d="M285 160H315V205H285Z"/></g><path d="M108 430H492V446H108Z" fill="#c7bda3"/><g fill="#2d6550"><path d="M48 450V345L10 405H32L0 445Z"/><path d="M552 450V345L590 405H568L600 445Z"/></g><g fill="#f0cc78"><circle cx="130" cy="480" r="5"/><circle cx="160" cy="500" r="5"/><circle cx="450" cy="490" r="5"/><circle cx="475" cy="465" r="5"/></g></svg>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="600"
+  height="600"
+  viewBox="0 0 600 600"
+>
+  <rect width="600" height="600" fill="#dceee8" />
+  <circle cx="490" cy="100" r="48" fill="#f6d98f" />
+  <path d="M0 400Q150 320 300 410T600 390V600H0Z" fill="#88ad83" />
+  <path d="M0 480Q210 410 600 480V600H0Z" fill="#477f62" />
+  <path d="M225 600L270 425H330L395 600" fill="#e5d6b8" />
+  <path d="M120 430V270H480V430Z" fill="#f9f6e8" />
+  <path d="M100 270L300 190L500 270Z" fill="#d6cfb8" />
+  <path d="M260 240V130H340V240" fill="#fffdf2" />
+  <path d="M248 140L300 85L352 140Z" fill="#ded5b8" />
+  <path d="M293 90V48H307V90Z" fill="#d1ac53" />
+  <path d="M300 45L323 62H300Z" fill="#e8c568" />
+  <path d="M270 430V345Q300 305 330 345V430" fill="#4a736b" />
+  <g fill="#9ebfba">
+    <path d="M150 310H180V370H150Z" />
+    <path d="M210 310H240V370H210Z" />
+    <path d="M360 310H390V370H360Z" />
+    <path d="M420 310H450V370H420Z" />
+    <path d="M285 160H315V205H285Z" />
+  </g>
+  <path d="M108 430H492V446H108Z" fill="#c7bda3" />
+  <g fill="#2d6550">
+    <path d="M48 450V345L10 405H32L0 445Z" />
+    <path d="M552 450V345L590 405H568L600 445Z" />
+  </g>
+  <g fill="#f0cc78">
+    <circle cx="130" cy="480" r="5" />
+    <circle cx="160" cy="500" r="5" />
+    <circle cx="450" cy="490" r="5" />
+    <circle cx="475" cy="465" r="5" />
+  </g>
+</svg>

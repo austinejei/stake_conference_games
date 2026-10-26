@@ -1,8 +1,207 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Moderation · Gospel Explorers</title><link rel="stylesheet" href="/styles.css"></head>
-<body><main class="admin-shell"><div class="topbar"><a class="brand" href="/">✦ Gospel Explorers</a><span>MODERATION</span></div>
-<header class="admin-header"><div class="eyebrow">A LITTLE CARE GOES A LONG WAY</div><h1>Keep the space kind.</h1><p>Review the words our explorers share.</p><div id="adminPresence" class="presence" role="status" aria-live="polite" hidden><span class="presence-dot" aria-hidden="true"></span><span id="adminLoggedInBadge">0 logged-in users</span></div></header>
-<section id="adminLogin" class="card"><h2>Welcome back, moderator.</h2><form id="loginForm"><label>Admin key<input id="adminKey" type="password" autocomplete="current-password" required></label><button class="primary" id="loginButton">Sign in securely</button></form></section>
-<p id="adminStatus" class="status" role="status"></p>
-<section id="adminWorkspace" hidden><section class="card admin-stats-card" aria-label="Explorer activity"><div class="row between"><div><div class="eyebrow">LIVE PARTICIPANT OVERVIEW</div><h2>Logged-in explorers</h2></div><button id="refreshStats" type="button">Refresh counts</button></div><div class="admin-stats-grid"><div class="admin-stat"><span class="admin-stat-value" id="statLoggedIn">0</span><span class="admin-stat-label">Logged-in users</span><small>Active signed-in sessions</small></div><div class="admin-stat"><span class="admin-stat-value" id="statOnline">0</span><span class="admin-stat-label">Online now</span><small>Active in the last 90 seconds</small></div><div class="admin-stat"><span class="admin-stat-value" id="statRegistered">0</span><span class="admin-stat-label">Registered accounts</span><small>Total explorers joined</small></div></div></section><section class="card announcement-admin"><div class="eyebrow">CONFERENCE ANNOUNCEMENTS</div><h2>Everyone, a moment please.</h2><p class="muted">Messages take over the recipient’s app and pause scored games until you clear them. They survive refreshes and server restarts.</p><form id="announcementForm"><label>Announcement title<input id="announcementTitle" maxlength="100" required placeholder="Please prepare for the next session"></label><label>Message<textarea id="announcementBody" maxlength="1500" required placeholder="Please put your devices away and listen with your families."></textarea></label><label>Send to<select id="announcementAudience"><option value="all">Everyone, including visitors who have not joined</option><option value="accounts">Selected accounts</option><option value="ages">Selected age groups</option><option value="wards">Selected wards / Visitor</option></select></label><div id="announcementTargetArea" hidden><label id="announcementSearchLabel">Find accounts<input id="announcementAccountSearch" type="search" placeholder="Search nickname, alias, age or ward"></label><div id="announcementRecipients" class="announcement-recipients"></div></div><p id="announcementAudienceSummary" class="muted"></p><button id="previewAnnouncement" type="button">Preview announcement</button><aside id="announcementPreview" class="announcement-draft" hidden><div class="eyebrow">PREVIEW · NOT SENT YET</div><h3 id="announcementPreviewTitle"></h3><p id="announcementPreviewBody"></p><p id="announcementPreviewAudience"></p><button id="sendAnnouncement" class="primary" type="submit">Send announcement</button></aside><p id="announcementAdminStatus" role="status"></p></form><div class="row between"><h3>Active announcements</h3><button id="refreshAnnouncements">Refresh announcements</button></div><div id="activeAnnouncements"></div><details><summary>Cleared announcement history</summary><div id="clearedAnnouncements"></div></details><p class="muted">“Displayed” means the app received and displayed the message, not proof that a person read it. Updates normally arrive within 3 seconds while a page is online and visible.</p></section><section class="card"><div class="eyebrow">CONFERENCE CONTROLS</div><h2>Right session. Right moment.</h2><p id="adminSessionState" class="muted"></p><form id="sessionForm"><label>Session behavior<select id="sessionMode"><option value="auto">Automatic · follow Ghana conference schedule</option><option value="free">Games open · before / after sessions</option><option value="leadership">Stake &amp; Ward Leadership</option><option value="adult">Adult Session</option><option value="general">General Session · quiet listening, games paused</option></select></label><button class="primary" id="applySession">Apply session mode</button></form><p class="muted">Manual settings affect everyone immediately. Return to Automatic after a preview.</p></section><div class="row between"><h2>Word moderation</h2><div class="row"><button id="refreshAdmin">Refresh</button><button id="logoutAdmin">Sign out</button></div></div><div class="moderation-toolbar"><label>Search words or senders<input id="moderationSearch" type="search" placeholder="Word, nickname, age or ward"></label><label>Show<select id="moderationFilter"><option value="queue">Needs attention</option><option value="pending">Pending approval</option><option value="review">Reported / review</option><option value="all">All words</option><option value="approved">Approved</option><option value="hidden">Hidden</option></select></label></div><p id="moderationSummary" class="muted" role="status"></p><div id="moderation"></div><div class="row between moderation-pagination"><button id="previousWords">← Previous</button><span id="moderationPage"></span><button id="nextWords">Next →</button></div></section>
-<footer>Moderator access · Gospel Explorers</footer></main><script src="/admin-announcements.js" defer></script><script src="/admin.js" defer></script></body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Moderation · Gospel Explorers</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="admin-shell">
+      <div class="topbar">
+        <a class="brand" href="/">✦ Gospel Explorers</a><span>MODERATION</span>
+      </div>
+      <header class="admin-header">
+        <div class="eyebrow">A LITTLE CARE GOES A LONG WAY</div>
+        <h1>Keep the space kind.</h1>
+        <p>Review the words our explorers share.</p>
+        <div
+          id="adminPresence"
+          class="presence"
+          role="status"
+          aria-live="polite"
+          hidden
+        >
+          <span class="presence-dot" aria-hidden="true"></span
+          ><span id="adminLoggedInBadge">0 logged-in users</span>
+        </div>
+      </header>
+      <section id="adminLogin" class="card">
+        <h2>Welcome back, moderator.</h2>
+        <form id="loginForm">
+          <label
+            >Admin key<input
+              id="adminKey"
+              type="password"
+              autocomplete="current-password"
+              required /></label
+          ><button class="primary" id="loginButton">Sign in securely</button>
+        </form>
+      </section>
+      <p id="adminStatus" class="status" role="status"></p>
+      <section id="adminWorkspace" hidden>
+        <section class="card admin-stats-card" aria-label="Explorer activity">
+          <div class="row between">
+            <div>
+              <div class="eyebrow">LIVE PARTICIPANT OVERVIEW</div>
+              <h2>Logged-in explorers</h2>
+            </div>
+            <button id="refreshStats" type="button">Refresh counts</button>
+          </div>
+          <div class="admin-stats-grid">
+            <div class="admin-stat">
+              <span class="admin-stat-value" id="statLoggedIn">0</span
+              ><span class="admin-stat-label">Logged-in users</span
+              ><small>Active signed-in sessions</small>
+            </div>
+            <div class="admin-stat">
+              <span class="admin-stat-value" id="statOnline">0</span
+              ><span class="admin-stat-label">Online now</span
+              ><small>Active in the last 90 seconds</small>
+            </div>
+            <div class="admin-stat">
+              <span class="admin-stat-value" id="statRegistered">0</span
+              ><span class="admin-stat-label">Registered accounts</span
+              ><small>Total explorers joined</small>
+            </div>
+          </div>
+        </section>
+        <section class="card announcement-admin">
+          <div class="eyebrow">CONFERENCE ANNOUNCEMENTS</div>
+          <h2>Everyone, a moment please.</h2>
+          <p class="muted">
+            Messages take over the recipient’s app and pause scored games until
+            you clear them. They survive refreshes and server restarts.
+          </p>
+          <form id="announcementForm">
+            <label
+              >Announcement title<input
+                id="announcementTitle"
+                maxlength="100"
+                required
+                placeholder="Please prepare for the next session" /></label
+            ><label
+              >Message<textarea
+                id="announcementBody"
+                maxlength="1500"
+                required
+                placeholder="Please put your devices away and listen with your families."
+              ></textarea></label
+            ><label
+              >Send to<select id="announcementAudience">
+                <option value="all">
+                  Everyone, including visitors who have not joined
+                </option>
+                <option value="accounts">Selected accounts</option>
+                <option value="ages">Selected age groups</option>
+                <option value="wards">Selected wards / Visitor</option>
+              </select></label
+            >
+            <div id="announcementTargetArea" hidden>
+              <label id="announcementSearchLabel"
+                >Find accounts<input
+                  id="announcementAccountSearch"
+                  type="search"
+                  placeholder="Search nickname, alias, age or ward"
+              /></label>
+              <div
+                id="announcementRecipients"
+                class="announcement-recipients"
+              ></div>
+            </div>
+            <p id="announcementAudienceSummary" class="muted"></p>
+            <button id="previewAnnouncement" type="button">
+              Preview announcement
+            </button>
+            <aside id="announcementPreview" class="announcement-draft" hidden>
+              <div class="eyebrow">PREVIEW · NOT SENT YET</div>
+              <h3 id="announcementPreviewTitle"></h3>
+              <p id="announcementPreviewBody"></p>
+              <p id="announcementPreviewAudience"></p>
+              <button id="sendAnnouncement" class="primary" type="submit">
+                Send announcement
+              </button>
+            </aside>
+            <p id="announcementAdminStatus" role="status"></p>
+          </form>
+          <div class="row between">
+            <h3>Active announcements</h3>
+            <button id="refreshAnnouncements">Refresh announcements</button>
+          </div>
+          <div id="activeAnnouncements"></div>
+          <details>
+            <summary>Cleared announcement history</summary>
+            <div id="clearedAnnouncements"></div>
+          </details>
+          <p class="muted">
+            “Displayed” means the app received and displayed the message, not
+            proof that a person read it. Updates normally arrive within 3
+            seconds while a page is online and visible.
+          </p>
+        </section>
+        <section class="card">
+          <div class="eyebrow">CONFERENCE CONTROLS</div>
+          <h2>Right session. Right moment.</h2>
+          <p id="adminSessionState" class="muted"></p>
+          <form id="sessionForm">
+            <label
+              >Session behavior<select id="sessionMode">
+                <option value="auto">
+                  Automatic · follow Ghana conference schedule
+                </option>
+                <option value="free">
+                  Games open · before / after sessions
+                </option>
+                <option value="leadership">Stake &amp; Ward Leadership</option>
+                <option value="adult">Adult Session</option>
+                <option value="general">
+                  General Session · quiet listening, games paused
+                </option>
+              </select></label
+            ><button class="primary" id="applySession">
+              Apply session mode
+            </button>
+          </form>
+          <p class="muted">
+            Manual settings affect everyone immediately. Return to Automatic
+            after a preview.
+          </p>
+        </section>
+        <div class="row between">
+          <h2>Word moderation</h2>
+          <div class="row">
+            <button id="refreshAdmin">Refresh</button
+            ><button id="logoutAdmin">Sign out</button>
+          </div>
+        </div>
+        <div class="moderation-toolbar">
+          <label
+            >Search words or senders<input
+              id="moderationSearch"
+              type="search"
+              placeholder="Word, nickname, age or ward" /></label
+          ><label
+            >Show<select id="moderationFilter">
+              <option value="queue">Needs attention</option>
+              <option value="pending">Pending approval</option>
+              <option value="review">Reported / review</option>
+              <option value="all">All words</option>
+              <option value="approved">Approved</option>
+              <option value="hidden">Hidden</option>
+            </select></label
+          >
+        </div>
+        <p id="moderationSummary" class="muted" role="status"></p>
+        <div id="moderation"></div>
+        <div class="row between moderation-pagination">
+          <button id="previousWords">← Previous</button
+          ><span id="moderationPage"></span
+          ><button id="nextWords">Next →</button>
+        </div>
+      </section>
+      <footer>Moderator access · Gospel Explorers</footer>
+    </main>
+    <script src="/admin-announcements.js" defer></script>
+    <script src="/admin.js" defer></script>
+  </body>
+</html>

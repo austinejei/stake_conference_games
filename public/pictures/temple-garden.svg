@@ -1,1 +1,50 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" role="img"><title>A house of the Lord</title><rect width="600" height="600" fill="#dcebe5"/><circle cx="510" cy="85" r="42" fill="#efd08a"/><g fill="#fffaf0" opacity=".8"><ellipse cx="110" cy="95" rx="65" ry="19"/><ellipse cx="145" cy="77" rx="32" ry="22"/><ellipse cx="530" cy="230" rx="45" ry="15"/></g><path d="M0 420Q140 345 300 415T600 395V600H0Z" fill="#9ab78a"/><path d="M0 485Q210 410 600 470V600H0Z" fill="#729875"/><path d="M130 440V280H470V440" fill="#fff7dc"/><path d="M100 280L300 195L500 280Z" fill="#d9bc88"/><path d="M265 250V125H335V250" fill="#fffdf0"/><path d="M250 130L300 78L350 130Z" fill="#dec796"/><path d="M295 80V38H305V80M300 40L328 56H300" stroke="#d8a83c" fill="#e4bd53"/><path d="M275 440V355Q300 323 325 355V440" fill="#47756a"/><g fill="#8fbbb2"><path d="M158 315H190V375H158ZM217 315H249V375H217ZM351 315H383V375H351ZM410 315H442V375H410Z"/></g><path d="M270 455L210 600H390L330 455" fill="#e6cda6"/><path d="M30 528V500" stroke="#537e55" stroke-width="4"/><circle cx="30" cy="500" r="8" fill="#d7a18b"/><path d="M107 560V532" stroke="#537e55" stroke-width="4"/><circle cx="107" cy="532" r="8" fill="#e6c57e"/><path d="M184 592V564" stroke="#537e55" stroke-width="4"/><circle cx="184" cy="564" r="8" fill="#d7a18b"/><path d="M261 528V500" stroke="#537e55" stroke-width="4"/><circle cx="261" cy="500" r="8" fill="#e6c57e"/><path d="M338 560V532" stroke="#537e55" stroke-width="4"/><circle cx="338" cy="532" r="8" fill="#d7a18b"/><path d="M415 592V564" stroke="#537e55" stroke-width="4"/><circle cx="415" cy="564" r="8" fill="#e6c57e"/><path d="M492 528V500" stroke="#537e55" stroke-width="4"/><circle cx="492" cy="500" r="8" fill="#d7a18b"/><path d="M569 560V532" stroke="#537e55" stroke-width="4"/><circle cx="569" cy="532" r="8" fill="#e6c57e"/></svg>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="600"
+  height="600"
+  viewBox="0 0 600 600"
+  role="img"
+>
+  <title>A house of the Lord</title>
+  <rect width="600" height="600" fill="#dcebe5" />
+  <circle cx="510" cy="85" r="42" fill="#efd08a" />
+  <g fill="#fffaf0" opacity=".8">
+    <ellipse cx="110" cy="95" rx="65" ry="19" />
+    <ellipse cx="145" cy="77" rx="32" ry="22" />
+    <ellipse cx="530" cy="230" rx="45" ry="15" />
+  </g>
+  <path d="M0 420Q140 345 300 415T600 395V600H0Z" fill="#9ab78a" />
+  <path d="M0 485Q210 410 600 470V600H0Z" fill="#729875" />
+  <path d="M130 440V280H470V440" fill="#fff7dc" />
+  <path d="M100 280L300 195L500 280Z" fill="#d9bc88" />
+  <path d="M265 250V125H335V250" fill="#fffdf0" />
+  <path d="M250 130L300 78L350 130Z" fill="#dec796" />
+  <path
+    d="M295 80V38H305V80M300 40L328 56H300"
+    stroke="#d8a83c"
+    fill="#e4bd53"
+  />
+  <path d="M275 440V355Q300 323 325 355V440" fill="#47756a" />
+  <g fill="#8fbbb2">
+    <path
+      d="M158 315H190V375H158ZM217 315H249V375H217ZM351 315H383V375H351ZM410 315H442V375H410Z"
+    />
+  </g>
+  <path d="M270 455L210 600H390L330 455" fill="#e6cda6" />
+  <path d="M30 528V500" stroke="#537e55" stroke-width="4" />
+  <circle cx="30" cy="500" r="8" fill="#d7a18b" />
+  <path d="M107 560V532" stroke="#537e55" stroke-width="4" />
+  <circle cx="107" cy="532" r="8" fill="#e6c57e" />
+  <path d="M184 592V564" stroke="#537e55" stroke-width="4" />
+  <circle cx="184" cy="564" r="8" fill="#d7a18b" />
+  <path d="M261 528V500" stroke="#537e55" stroke-width="4" />
+  <circle cx="261" cy="500" r="8" fill="#e6c57e" />
+  <path d="M338 560V532" stroke="#537e55" stroke-width="4" />
+  <circle cx="338" cy="532" r="8" fill="#d7a18b" />
+  <path d="M415 592V564" stroke="#537e55" stroke-width="4" />
+  <circle cx="415" cy="564" r="8" fill="#e6c57e" />
+  <path d="M492 528V500" stroke="#537e55" stroke-width="4" />
+  <circle cx="492" cy="500" r="8" fill="#d7a18b" />
+  <path d="M569 560V532" stroke="#537e55" stroke-width="4" />
+  <circle cx="569" cy="532" r="8" fill="#e6c57e" />
+</svg>
