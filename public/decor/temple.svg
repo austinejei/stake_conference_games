@@ -1,1 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g fill="none" stroke="#7496c7" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 82V44H85V82ZM10 44L50 28L90 44M42 30V16H58V30M40 16L50 6L60 16M45 82V62H55V82M26 53V65M73 53V65M10 86H90"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <g
+    fill="none"
+    stroke="#7496c7"
+    stroke-width="4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path
+      d="M15 82V44H85V82ZM10 44L50 28L90 44M42 30V16H58V30M40 16L50 6L60 16M45 82V62H55V82M26 53V65M73 53V65M10 86H90"
+    />
+  </g>
+</svg>
