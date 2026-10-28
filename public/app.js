@@ -260,14 +260,57 @@ async function openGame(game) {
     if (game === "crossword" && !d.complete) {
       const info = make("div", "crossword-mobile-info"),
         infoButton = make("button", "tooltip-info-icon", "i");
+      let hintPopover = null,
+        hintedCell = null;
+      const clearHint = () => {
+        hintedCell?.classList.remove("crossword-hint-target");
+        hintedCell?.querySelector("input")?.removeAttribute("aria-describedby");
+        hintedCell = null;
+        hintPopover?.remove();
+        hintPopover = null;
+      };
+      const showHint = (hint) => {
+        clearHint();
+        hintedCell = hint.target;
+        hintedCell.classList.add("crossword-hint-target");
+        hintedCell.querySelector("input")?.setAttribute(
+          "aria-describedby",
+          "crosswordHintPopover",
+        );
+        hintPopover = make(
+          "div",
+          "crossword-hint-popover",
+          `${hint.clueNumber} ${hint.direction}: this square is ${hint.letter}.`,
+        );
+        hintPopover.id = "crosswordHintPopover";
+        hintPopover.setAttribute("role", "status");
+        hintPopover.setAttribute("aria-live", "polite");
+        document.body.appendChild(hintPopover);
+        const rect = hintedCell.getBoundingClientRect(),
+          width = Math.min(280, window.innerWidth - 24);
+        hintPopover.style.width = `${width}px`;
+        const height = hintPopover.offsetHeight,
+          left = Math.max(
+            12,
+            Math.min(rect.left, window.innerWidth - width - 12),
+          ),
+          top =
+            rect.bottom + height + 12 <= window.innerHeight
+              ? rect.bottom + 8
+              : Math.max(12, rect.top - height - 8);
+        hintPopover.style.left = `${left}px`;
+        hintPopover.style.top = `${top}px`;
+      };
       infoButton.type = "button";
-      infoButton.setAttribute("aria-label", "Reveal a letter hint");
+      infoButton.setAttribute("aria-label", "Show a letter hint");
       infoButton.title =
-        "Reveal one correct letter in the selected answer; no points are deducted.";
+        "Show one correct letter beside its crossword square; it will not be entered for you.";
       infoButton.onclick = async () => {
         infoButton.disabled = true;
         try {
-          text(status, (await answer.hint()).message);
+          const hint = await answer.hint();
+          if (hint.target) showHint(hint);
+          else text(status, hint.message);
         } catch (error) {
           text(status, error.message);
         } finally {
@@ -328,6 +371,7 @@ async function openGame(game) {
 
       board.addEventListener("focusin", (e) => {
         if (e.target.tagName !== "INPUT") return;
+        clearHint();
         
         const match = (e.target.name || e.target.id || "").match(/(\d+),(\d+)/);
         if (!match) return;
@@ -360,6 +404,7 @@ async function openGame(game) {
       const oldDispose = disposeGame;
       disposeGame = () => {
         if (tooltip) tooltip.innerHTML = "";
+        clearHint();
         oldDispose?.();
       };
     }

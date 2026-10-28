@@ -214,10 +214,11 @@ window.ExplorerGames = {
           !/^[a-z]$/i.test(hint.letter)
         )
           throw Error("Could not apply that hint. Please try again.");
-        input.value = hint.letter.toUpperCase();
-        input.oninput?.();
         return {
-          message: `Hint: one letter in ${clue.number} ${clue.direction} was revealed. No points were deducted.`,
+          target: input.parentElement,
+          letter: hint.letter.toUpperCase(),
+          clueNumber: clue.number,
+          direction: clue.direction,
         };
       };
     } else if (p.type === "wordsearch") {
