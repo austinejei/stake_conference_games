@@ -283,6 +283,41 @@ async function openGame(game) {
     disposeGame = () => answer.dispose?.();
     controls.append(submit, status);
     box.appendChild(controls);
+
+    if (game === "crossword") {
+      // Create the tooltip container using your existing 'make' helper
+      const tooltip = make("div", "mobile-clue-tooltip");
+      board.prepend(tooltip);
+
+      // Attach focus listeners to dynamically rendered crossword inputs
+      board.querySelectorAll("input").forEach((input) => {
+        input.addEventListener("focus", () => {
+          // Extract row and col coordinates. CheckAnswer uses string formats like "0,1".
+          const match = (input.name || input.id || "").match(/(\d+)[^\d]+(\d+)/);
+          const r = match ? parseInt(match[1]) : parseInt(input.dataset.row);
+          const c = match ? parseInt(match[2]) : parseInt(input.dataset.col);
+
+          if (!isNaN(r) && !isNaN(c)) {
+            // Find the intersecting clue from the puzzle object (d.clues)
+            const activeClue = d.clues.find((clue) => {
+              const isDown = clue.direction === "down" && c === clue.col && r >= clue.row && r < clue.row + clue.length;
+              const isAcross = clue.direction === "across" && r === clue.row && c >= clue.col && c < clue.col + clue.length;
+              return isDown || isAcross;
+            });
+            
+            if (activeClue) {
+              tooltip.textContent = `${activeClue.number}. ${activeClue.clue}`;
+            }
+          }
+        });
+        
+        // Clear the tooltip when the user taps away
+        input.addEventListener("blur", () => {
+          tooltip.textContent = "";
+        });
+      });
+    }
+
     submit.onclick = async () => {
       if (answer.ready && !answer.ready()) {
         text(status, "Let this connection finish checking, then try again.");
@@ -539,7 +574,7 @@ async function loadRank() {
       "/api/leaderboard?age=" + encodeURIComponent(player.age),
     );
     for (const [id, items, format] of [
-      ["playerRanks", d.players, (p) => `${p.nickname} — ${p.points} pts`],
+      ["playerRanks", d.players, (p) => `${p.nickname} (${p.ward}) — ${p.points} pts`],
       [
         "wardRanks",
         d.wards,
