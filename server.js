@@ -647,7 +647,12 @@ async function api(req, res, u) {
       .filter((p) => !age || p.age === age)
       .sort((a, b) => b.points - a.points)
       .slice(0, 20)
-      .map((p) => ({ nickname: publicName(p), age: p.age, points: p.points }));
+      .map((p) => ({ 
+        nickname: p.nickname || publicName(p), 
+        age: p.age, 
+        points: p.points, 
+        ward: p.ward 
+      }));
     const wardMap = new Map();
     for (const p of db.players) {
       if (p.ward === "Visitor") continue;
@@ -851,7 +856,7 @@ const server = http.createServer(async (req, res) => {
         "content-type": types[path.extname(file)] || "application/octet-stream",
         "x-content-type-options": "nosniff",
         "content-security-policy":
-          "default-src 'self'; img-src 'self' blob:; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'",
+          "default-src 'self'; img-src 'self' blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'",
       });
       res.end(data);
     });
