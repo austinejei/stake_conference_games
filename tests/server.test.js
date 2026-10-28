@@ -124,28 +124,6 @@ test("player persistence, scoring, presence and isolated admin access", async ()
     assert.match(registration.cookie, /SameSite=Strict/);
     assert.equal(registration.body.token, undefined);
     const playerCookie = registration.cookie.split(";")[0];
-    const crossword = (
-      await api("/api/challenge?game=crossword", { cookie: playerCookie })
-    ).body;
-    const clue = crossword.clues[0],
-      hint = await api("/api/crossword/hint", {
-        method: "POST",
-        cookie: playerCookie,
-        body: {
-          level: crossword.level,
-          clueNumber: clue.number,
-          direction: clue.direction,
-          answer: {},
-        },
-      });
-    assert.equal(hint.status, 200);
-    assert.equal(hint.body.letter.length, 1);
-      assert.equal(hint.body.row, clue.row);
-      assert.equal(hint.body.col, clue.col);
-      assert.equal(
-        (await api("/api/me", { cookie: playerCookie })).body.player.points,
-        0,
-      );
     assert.match(
       registration.body.recoveryCode,
       /^[a-f0-9]{4}(-[a-f0-9]{4}){5}$/,

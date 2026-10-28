@@ -910,7 +910,7 @@ body:has(.share-dialog[open]) {
   pointer-events: none;
 }
 
-.crossword-hint-target {
+.crossword-clue-anchor {
   z-index: 1;
   outline: 4px solid #f1b927;
   outline-offset: 2px;
