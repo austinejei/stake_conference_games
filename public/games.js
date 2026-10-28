@@ -189,36 +189,19 @@ window.ExplorerGames = {
         Object.fromEntries(
           [...inputs].map(([key, input]) => [key, input.value]),
         );
-      answer.hint = async () => {
+      answer.hint = () => {
         const clue = selectedClue;
         if (!clue)
           return {
             message: "Tap a square in the answer you want a hint for.",
           };
-        if (typeof options.crosswordHint !== "function")
-          throw Error("Hints are unavailable right now.");
-        const hint = await options.crosswordHint({
-          clueNumber: clue.number,
-          direction: clue.direction,
-          answer: answer(),
-        });
-        if (hint.complete)
-          return { message: "That answer is already complete." };
-        const key = `${hint.row},${hint.col}`,
-          input = inputs.get(key);
-        if (
-          !wordCells(clue).includes(key) ||
-          !input ||
-          input.readOnly ||
-          typeof hint.letter !== "string" ||
-          !/^[a-z]$/i.test(hint.letter)
-        )
-          throw Error("Could not apply that hint. Please try again.");
+        const target = inputs.get(`${clue.row},${clue.col}`);
+        if (!target) throw Error("Could not find the selected crossword clue.");
         return {
-          target: input.parentElement,
-          letter: hint.letter.toUpperCase(),
+          target: target.parentElement,
           clueNumber: clue.number,
           direction: clue.direction,
+          clue: clue.clue,
         };
       };
     } else if (p.type === "wordsearch") {

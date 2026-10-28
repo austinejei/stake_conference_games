@@ -257,34 +257,31 @@ async function openGame(game) {
       box.hidden = true;
       box.replaceChildren();
     };
+    let hintPopover = null,
+      hintedCell = null;
+    const clearHint = () => {
+      hintedCell?.classList.remove("crossword-clue-anchor");
+      hintedCell?.querySelector("input")?.removeAttribute("aria-describedby");
+      hintedCell = null;
+      hintPopover?.remove();
+      hintPopover = null;
+    };
     if (game === "crossword" && !d.complete) {
       const info = make("div", "crossword-mobile-info"),
         infoButton = make("button", "tooltip-info-icon", "i");
-      let hintPopover = null,
-        hintedCell = null;
-      const clearHint = () => {
-        hintedCell?.classList.remove("crossword-hint-target");
-        hintedCell?.querySelector("input")?.removeAttribute("aria-describedby");
-        hintedCell = null;
-        hintPopover?.remove();
-        hintPopover = null;
-      };
       const showHint = (hint) => {
         clearHint();
         hintedCell = hint.target;
-        hintedCell.classList.add("crossword-hint-target");
-        hintedCell.querySelector("input")?.setAttribute(
-          "aria-describedby",
-          "crosswordHintPopover",
-        );
+        hintedCell.classList.add("crossword-clue-anchor");
+        const input = hintedCell.querySelector("input");
         hintPopover = make(
           "div",
           "crossword-hint-popover",
-          `${hint.clueNumber} ${hint.direction}: this square is ${hint.letter}.`,
+          `${hint.clueNumber} ${hint.direction}: ${hint.clue}`,
         );
         hintPopover.id = "crosswordHintPopover";
-        hintPopover.setAttribute("role", "status");
-        hintPopover.setAttribute("aria-live", "polite");
+        hintPopover.setAttribute("role", "tooltip");
+        input?.setAttribute("aria-describedby", hintPopover.id);
         document.body.appendChild(hintPopover);
         const rect = hintedCell.getBoundingClientRect(),
           width = Math.min(280, window.innerWidth - 24);
@@ -302,20 +299,13 @@ async function openGame(game) {
         hintPopover.style.top = `${top}px`;
       };
       infoButton.type = "button";
-      infoButton.setAttribute("aria-label", "Show a letter hint");
+      infoButton.setAttribute("aria-label", "Show the selected crossword clue");
       infoButton.title =
-        "Show one correct letter beside its crossword square; it will not be entered for you.";
-      infoButton.onclick = async () => {
-        infoButton.disabled = true;
-        try {
-          const hint = await answer.hint();
-          if (hint.target) showHint(hint);
-          else text(status, hint.message);
-        } catch (error) {
-          text(status, error.message);
-        } finally {
-          infoButton.disabled = false;
-        }
+        "Show the selected clue beside its numbered square.";
+      infoButton.onclick = () => {
+        const hint = answer.hint();
+        if (hint.target) showHint(hint);
+        else text(status, hint.message);
       };
       info.append(infoButton);
       const actions = make("div", "crossword-header-actions");
@@ -339,13 +329,6 @@ async function openGame(game) {
     const board = make("div", "game-board");
     box.appendChild(board);
     const answer = ExplorerGames.render(d, board, {
-        crosswordHint: ({ clueNumber, direction, answer }) =>
-          api("/api/crossword/hint", "POST", {
-            level: d.level,
-            clueNumber,
-            direction,
-            answer,
-          }),
         checkMatch: (left, right) =>
           api("/api/match/check", "POST", { level: d.level, left, right }),
       }),
