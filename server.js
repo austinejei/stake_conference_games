@@ -220,7 +220,12 @@ const blocked = ["fuck", "shit", "bitch", "idiot", "stupid", "sex", "porn"];
 function unsafe(w) {
   return blocked.some((x) => w.toLowerCase().includes(x));
 }
-const { makeChallenge, publicPuzzle, checkAnswer } = require("./lib/games");
+const {
+  makeChallenge,
+  publicPuzzle,
+  checkAnswer,
+  crosswordHint,
+} = require("./lib/games");
 const { conferenceState } = require("./lib/conference");
 const {
   matchesAnnouncement,
@@ -570,6 +575,47 @@ async function api(req, res, u) {
       game,
       level: level + 1,
       ...publicPuzzle(makeChallenge(game, p.age, level)),
+    });
+  }
+  if (route === "/api/crossword/hint" && method === "POST") {
+    if (currentConference().quiet)
+      return json(res, 423, {
+        error: "Scored games will return after the general session.",
+      });
+    const p = auth(req);
+    if (!p) return json(res, 401, { error: "Please sign in" });
+    if (hasAnnouncement(p))
+      return json(res, 423, {
+        error: "Games are paused for an organizer announcement.",
+      });
+    if (!rate(req, "crossword-hint:" + p.id, 30))
+      return json(res, 429, { error: "Please wait before using another hint." });
+    const b = await read(req);
+    if (b.level !== p.progress.crossword + 1 || p.progress.crossword >= 15)
+      return json(res, 409, {
+        error: "Level changed. Open this challenge again.",
+      });
+    if (!b.answer || typeof b.answer !== "object" || Array.isArray(b.answer))
+      return json(res, 400, { error: "Submit your current crossword answers for a hint." });
+    const puzzle = makeChallenge("crossword", p.age, p.progress.crossword),
+      hint = crosswordHint(
+        puzzle,
+        b.clueNumber,
+        b.direction,
+        b.answer,
+      );
+    if (hint) return json(res, 200, hint);
+    if (
+      Number.isInteger(b.clueNumber) &&
+      ["across", "down"].includes(b.direction) &&
+      puzzle.clues.some(
+        (clue) =>
+          clue.number === b.clueNumber && clue.direction === b.direction,
+      )
+    )
+      return json(res, 200, { complete: true });
+    return json(res, 400, {
+      error: "Select a valid crossword answer for a hint.",
     });
   }
   if (route === "/api/match/check" && method === "POST") {
