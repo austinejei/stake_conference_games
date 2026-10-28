@@ -41,33 +41,73 @@ const seed = [
   status: "approved",
   createdAt: Date.now(),
 }));
-const { DatabaseSync } = require("node:sqlite");
-const database = new DatabaseSync(
-  path.join(path.dirname(store), "stake-quest.sqlite"),
-);
-database.exec(
-  "PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS state (id INTEGER PRIMARY KEY CHECK(id=1), body TEXT NOT NULL); CREATE TABLE IF NOT EXISTS sessions (token TEXT PRIMARY KEY, player_id TEXT NOT NULL, expires INTEGER NOT NULL, kind TEXT NOT NULL)",
-);
-const saved = database.prepare("SELECT body FROM state WHERE id=1").get();
-let db;
-if (saved) {
-  db = JSON.parse(saved.body);
-} else {
-  try {
-    db = JSON.parse(fs.readFileSync(store, "utf8"));
-  } catch (e) {
-    if (e.code !== "ENOENT") throw e;
+async function start() {
+  const { DatabaseSync } = require("node:sqlite"),
+    { createClient } = require("@libsql/client"),
+    hasTursoUrl = Boolean(process.env.TURSO_DATABASE_URL),
+    hasTursoToken = Boolean(process.env.TURSO_AUTH_TOKEN);
+  if (hasTursoUrl !== hasTursoToken)
+    throw Error("Set both TURSO_DATABASE_URL and TURSO_AUTH_TOKEN");
+  const isTurso = hasTursoUrl,
+    database = isTurso
+      ? createClient({
+          url: process.env.TURSO_DATABASE_URL,
+          authToken: process.env.TURSO_AUTH_TOKEN,
+        })
+      : new DatabaseSync(path.join(path.dirname(store), "stake-quest.sqlite"));
+  function run(sql, args = []) {
+    return isTurso
+      ? database.execute({ sql, args })
+      : Promise.resolve(database.prepare(sql).run(...args));
+  }
+  async function all(sql, args = []) {
+    if (isTurso) {
+      const result = await database.execute({ sql, args });
+      return Array.from(result.rows);
+    }
+    return database.prepare(sql).all(...args);
+  }
+  async function first(sql, args = []) {
+    if (isTurso) {
+      const result = await database.execute({ sql, args });
+      return result.rows[0] || null;
+    }
+    return database.prepare(sql).get(...args) || null;
+  }
+  if (!isTurso) database.exec("PRAGMA journal_mode=WAL");
+  await run(
+    "CREATE TABLE IF NOT EXISTS state (id INTEGER PRIMARY KEY CHECK(id=1), body TEXT NOT NULL)",
+  );
+  await run(
+    "CREATE TABLE IF NOT EXISTS sessions (token TEXT PRIMARY KEY, player_id TEXT NOT NULL, expires INTEGER NOT NULL, kind TEXT NOT NULL)",
+  );
+  const saved = await first("SELECT body FROM state WHERE id=1");
+  let db;
+  if (saved) {
+    db = JSON.parse(saved.body);
+  } else if (!isTurso) {
+    try {
+      db = JSON.parse(fs.readFileSync(store, "utf8"));
+    } catch (e) {
+      if (e.code !== "ENOENT") throw e;
+      db = { players: [], words: seed, events: [] };
+    }
+  } else {
     db = { players: [], words: seed, events: [] };
   }
-}
-function save() {
-  database
-    .prepare(
-      "INSERT INTO state(id,body) VALUES(1,?) ON CONFLICT(id) DO UPDATE SET body=excluded.body",
-    )
-    .run(JSON.stringify(db));
-}
-save();
+  db.announcements ||= [];
+  let pendingSave = Promise.resolve();
+  function save() {
+    const body = JSON.stringify(db);
+    pendingSave = pendingSave.then(() =>
+      run(
+        "INSERT INTO state(id,body) VALUES(1,?) ON CONFLICT(id) DO UPDATE SET body=excluded.body",
+        [body],
+      ),
+    );
+    return pendingSave;
+  }
+  await save();
 const hits = new Map();
 function hash(value) {
   return crypto.createHash("sha256").update(value).digest("hex");
@@ -81,22 +121,24 @@ function cookie(req, name) {
       ?.slice(name.length + 1) || ""
   );
 }
-function session(req, kind) {
+async function session(req, kind) {
   const value = cookie(req, kind === "admin" ? "sq_admin" : "sq_player");
   return value
-    ? database
-        .prepare(
-          "SELECT * FROM sessions WHERE token=? AND kind=? AND expires>?",
-        )
-        .get(hash(value), kind, Date.now())
+    ? await first(
+        "SELECT * FROM sessions WHERE token=? AND kind=? AND expires>?",
+        [hash(value), kind, Date.now()],
+      )
     : null;
 }
-function issueSession(res, id, kind) {
+async function issueSession(res, id, kind) {
   const value = crypto.randomBytes(32).toString("hex"),
     seconds = kind === "admin" ? 3600 : 604800;
-  database
-    .prepare("INSERT INTO sessions VALUES(?,?,?,?)")
-    .run(hash(value), id, Date.now() + seconds * 1000, kind);
+  await run("INSERT INTO sessions VALUES(?,?,?,?)", [
+    hash(value),
+    id,
+    Date.now() + seconds * 1000,
+    kind,
+  ]);
   res.setHeader(
     "Set-Cookie",
     `sq_${kind}=${value}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${seconds}${production ? "; Secure" : ""}`,
@@ -104,7 +146,9 @@ function issueSession(res, id, kind) {
 }
 setInterval(() => {
   const now = Date.now();
-  database.prepare("DELETE FROM sessions WHERE expires<=?").run(now);
+  run("DELETE FROM sessions WHERE expires<=?", [now]).catch((error) =>
+    console.error("Session cleanup failed:", error),
+  );
   for (const [key, times] of hits) {
     const live = times.filter((t) => now - t < 60000);
     if (live.length) hits.set(key, live);
@@ -120,19 +164,18 @@ function onlineCount() {
   }
   return onlinePlayers.size;
 }
-function loggedInCount() {
+async function loggedInCount() {
   const now = Date.now(),
     valid = new Set(db.players.map((p) => p.id));
-  return database
-    .prepare(
-      "SELECT DISTINCT player_id FROM sessions WHERE kind='player' AND expires>?",
-    )
-    .all(now)
+  return (await all(
+    "SELECT DISTINCT player_id FROM sessions WHERE kind='player' AND expires>?",
+    [now],
+  ))
     .filter((r) => valid.has(r.player_id)).length;
 }
-function adminStats() {
+async function adminStats() {
   return {
-    loggedIn: loggedInCount(),
+    loggedIn: await loggedInCount(),
     online: onlineCount(),
     registered: db.players.length,
   };
@@ -170,14 +213,14 @@ function clean(s, max = 32) {
     .replace(/\s+/g, " ")
     .slice(0, max);
 }
-function auth(req) {
-  const s = session(req, "player");
+async function auth(req) {
+  const s = await session(req, "player");
   const p = s ? db.players.find((p) => p.id === s.player_id) : null;
   if (p) p.lastActiveAt = Date.now();
   return p;
 }
-function admin(req) {
-  return !!session(req, "admin");
+async function admin(req) {
+  return !!(await session(req, "admin"));
 }
 function rate(req, key, limit = 20) {
   const ip = req.socket.remoteAddress || "unknown",
@@ -232,7 +275,6 @@ const {
   visibleAnnouncements,
   validateAnnouncement,
 } = require("./lib/announcements");
-db.announcements ||= [];
 function hasAnnouncement(p) {
   return db.announcements.some((m) => matchesAnnouncement(m, p));
 }
@@ -249,7 +291,7 @@ const wards = (process.env.WARDS || "")
   .split("|")
   .map((w) => w.trim())
   .filter(Boolean);
-function removeAccount(id) {
+async function removeAccount(id) {
   for (const m of db.announcements) {
     m.displayedTo = m.displayedTo.filter((v) => v !== id);
     if (m.target.type === "accounts")
@@ -264,21 +306,25 @@ function removeAccount(id) {
     }
     w.reports = w.reports.filter((v) => v !== id);
   }
-  database.prepare("DELETE FROM sessions WHERE player_id=?").run(id);
+  await run("DELETE FROM sessions WHERE player_id=?", [id]);
   onlinePlayers.delete(id);
 }
-function maintainData() {
+async function maintainData() {
   const cutoff = Date.now() - 30 * 86400000;
   for (const p of [...db.players])
-    if ((p.lastActiveAt || p.createdAt) < cutoff) removeAccount(p.id);
+    if ((p.lastActiveAt || p.createdAt) < cutoff) await removeAccount(p.id);
   db.events = db.events.filter((e) => e.at >= cutoff);
   db.announcements = db.announcements.filter(
     (m) => !m.clearedAt || m.clearedAt >= cutoff,
   );
-  save();
+  await save();
 }
-maintainData();
-setInterval(maintainData, 60000).unref();
+await maintainData();
+setInterval(() => {
+  maintainData().catch((error) =>
+    console.error("Data maintenance failed:", error),
+  );
+}, 60000).unref();
 function currentConference() {
   return conferenceState(Date.now(), db.settings?.sessionOverride || "auto");
 }
@@ -301,10 +347,10 @@ async function api(req, res, u) {
   const method = req.method;
   if (route === "/api/announcements" && method === "GET")
     return json(res, 200, {
-      announcements: visibleAnnouncements(db.announcements, auth(req)),
+      announcements: visibleAnnouncements(db.announcements, await auth(req)),
     });
   if (route === "/api/announcements/ack" && method === "POST") {
-    const p = auth(req);
+    const p = await auth(req);
     if (!p) return json(res, 401, { error: "Please sign in" });
     const b = await read(req);
     if (!Array.isArray(b.ids) || b.ids.length > 50)
@@ -320,11 +366,12 @@ async function api(req, res, u) {
         changed = true;
       }
     }
-    if (changed) save();
+    if (changed) await save();
     return json(res, 200, { ok: true });
   }
   if (route === "/api/admin/announcements" && method === "GET") {
-    if (!admin(req)) return json(res, 403, { error: "Admin access denied" });
+    if (!(await admin(req)))
+      return json(res, 403, { error: "Admin access denied" });
     return json(res, 200, {
       announcements: db.announcements
         .map(({ displayedTo, ...m }) => ({
@@ -344,7 +391,8 @@ async function api(req, res, u) {
     });
   }
   if (route === "/api/admin/announcements" && method === "POST") {
-    if (!admin(req)) return json(res, 403, { error: "Admin access denied" });
+    if (!(await admin(req)))
+      return json(res, 403, { error: "Admin access denied" });
     if (db.announcements.filter((m) => !m.clearedAt).length >= 20)
       return json(res, 409, {
         error: "Clear an active announcement before adding more (20 maximum).",
@@ -370,14 +418,15 @@ async function api(req, res, u) {
       announcementId: message.id,
       audience: fields.target.type,
     });
-    save();
+    await save();
     return json(res, 201, { id: message.id });
   }
   if (
     /^\/api\/admin\/announcements\/[a-z0-9-]+\/clear$/.test(route) &&
     method === "POST"
   ) {
-    if (!admin(req)) return json(res, 403, { error: "Admin access denied" });
+    if (!(await admin(req)))
+      return json(res, 403, { error: "Admin access denied" });
     const message = db.announcements.find((m) => m.id === route.split("/")[4]);
     if (!message) return json(res, 404, { error: "Announcement not found" });
     if (!message.clearedAt) {
@@ -387,24 +436,25 @@ async function api(req, res, u) {
         type: "announcement-cleared",
         announcementId: message.id,
       });
-      save();
+      await save();
     }
     return json(res, 200, { ok: true });
   }
   if (route === "/api/health" && method === "GET") {
-    database.prepare("SELECT 1").get();
+    await first("SELECT 1");
     return json(res, 200, { ok: true });
   }
   if (route === "/api/conference" && method === "GET")
     return json(res, 200, currentConference());
   if (route === "/api/admin/conference" && method === "PATCH") {
-    if (!admin(req)) return json(res, 403, { error: "Admin access denied" });
+    if (!(await admin(req)))
+      return json(res, 403, { error: "Admin access denied" });
     const b = await read(req);
     if (!["auto", "free", "leadership", "adult", "general"].includes(b.mode))
       return json(res, 400, { error: "Unknown session mode" });
     db.settings = { ...db.settings, sessionOverride: b.mode };
     db.events.push({ at: Date.now(), type: "session-mode", mode: b.mode });
-    save();
+    await save();
     return json(res, 200, currentConference());
   }
   if (route === "/api/recover" && method === "POST") {
@@ -423,24 +473,24 @@ async function api(req, res, u) {
         error: "Recovery code not recognized. Check your saved code.",
       });
     p.lastActiveAt = Date.now();
-    save();
-    issueSession(res, p.id, "player");
+    await save();
+    await issueSession(res, p.id, "player");
     return json(res, 200, { player: playerOut(p) });
   }
   if (route === "/api/recovery-code" && method === "POST") {
-    const p = auth(req);
+    const p = await auth(req);
     if (!p) return json(res, 401, { error: "Please sign in" });
     const recovery = recoveryCode();
     p.recoveryHash = hash(normalizeCode(recovery));
-    save();
+    await save();
     return json(res, 200, { recoveryCode: recovery });
   }
   if (route === "/api/logout" && method === "POST") {
-    const p = auth(req);
+    const p = await auth(req);
     if (p) onlinePlayers.delete(p.id);
-    database
-      .prepare("DELETE FROM sessions WHERE token=?")
-      .run(hash(cookie(req, "sq_player")));
+    await run("DELETE FROM sessions WHERE token=?", [
+      hash(cookie(req, "sq_player")),
+    ]);
     res.setHeader(
       "Set-Cookie",
       `sq_player=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${production ? "; Secure" : ""}`,
@@ -448,13 +498,13 @@ async function api(req, res, u) {
     return json(res, 200, { ok: true });
   }
   if (route === "/api/account" && method === "DELETE") {
-    const p = auth(req);
+    const p = await auth(req);
     if (!p) return json(res, 401, { error: "Please sign in" });
     const b = await read(req);
     if (b.confirm !== "DELETE")
       return json(res, 400, { error: "Type DELETE to confirm." });
-    removeAccount(p.id);
-    save();
+    await removeAccount(p.id);
+    await save();
     res.setHeader(
       "Set-Cookie",
       `sq_player=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${production ? "; Secure" : ""}`,
@@ -476,13 +526,13 @@ async function api(req, res, u) {
       )
     )
       return json(res, 403, { error: "Invalid admin key" });
-    issueSession(res, "moderator", "admin");
+    await issueSession(res, "moderator", "admin");
     return json(res, 200, { ok: true });
   }
   if (route === "/api/admin/logout" && method === "POST") {
-    database
-      .prepare("DELETE FROM sessions WHERE token=?")
-      .run(hash(cookie(req, "sq_admin")));
+    await run("DELETE FROM sessions WHERE token=?", [
+      hash(cookie(req, "sq_admin")),
+    ]);
     res.setHeader(
       "Set-Cookie",
       `sq_admin=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${production ? "; Secure" : ""}`,
@@ -492,7 +542,7 @@ async function api(req, res, u) {
   if (route === "/api/presence" && method === "GET")
     return json(res, 200, { online: onlineCount() });
   if (route === "/api/presence" && method === "POST") {
-    const p = auth(req);
+    const p = await auth(req);
     if (!p) return json(res, 401, { error: "Please sign in" });
     onlinePlayers.set(p.id, Date.now());
     return json(res, 200, { online: onlineCount() });
@@ -540,15 +590,15 @@ async function api(req, res, u) {
     player.recoveryHash = hash(normalizeCode(recovery));
     player.acknowledgedAt = Date.now();
     db.players.push(player);
-    save();
-    issueSession(res, id, "player");
+    await save();
+    await issueSession(res, id, "player");
     return json(res, 201, {
       player: playerOut(player),
       recoveryCode: recovery,
     });
   }
   if (route === "/api/me" && method === "GET") {
-    const p = auth(req);
+    const p = await auth(req);
     return p
       ? json(res, 200, { player: playerOut(p) })
       : json(res, 401, { error: "Please sign in" });
@@ -559,7 +609,7 @@ async function api(req, res, u) {
         error:
           "Scored games are resting during the general session. Join the listening activities instead.",
       });
-    const p = auth(req);
+    const p = await auth(req);
     if (!p) return json(res, 401, { error: "Please sign in" });
     if (hasAnnouncement(p))
       return json(res, 423, {
@@ -582,7 +632,7 @@ async function api(req, res, u) {
       return json(res, 423, {
         error: "Scored games will return after the general session.",
       });
-    const p = auth(req);
+    const p = await auth(req);
     if (!p) return json(res, 401, { error: "Please sign in" });
     if (hasAnnouncement(p))
       return json(res, 423, {
@@ -623,7 +673,7 @@ async function api(req, res, u) {
       return json(res, 423, {
         error: "Matching is paused during the general session.",
       });
-    const p = auth(req);
+    const p = await auth(req);
     if (!p) return json(res, 401, { error: "Please sign in" });
     if (hasAnnouncement(p))
       return json(res, 423, {
@@ -649,7 +699,7 @@ async function api(req, res, u) {
       return json(res, 423, {
         error: "Scored games will return after the general session.",
       });
-    const p = auth(req);
+    const p = await auth(req);
     if (!p) return json(res, 401, { error: "Please sign in" });
     if (hasAnnouncement(p))
       return json(res, 423, {
@@ -672,7 +722,7 @@ async function api(req, res, u) {
     if (correct) {
       p.progress[game]++;
       p.points += scoreFor(game);
-      save();
+      await save();
     }
     return json(res, 200, {
       correct,
@@ -683,7 +733,7 @@ async function api(req, res, u) {
     });
   }
   if (route === "/api/share-badge" && method === "GET") {
-    const p = auth(req);
+    const p = await auth(req);
     if (!p) return json(res, 401, { error: "Please sign in" });
     return json(res, 200, require("./lib/share").shareBadge(p, db.players));
   }
@@ -718,7 +768,7 @@ async function api(req, res, u) {
     return json(res, 200, { players, wards });
   }
   if (route === "/api/words" && method === "GET") {
-    const p = auth(req);
+    const p = await auth(req);
     return json(res, 200, {
       words: db.words
         .filter((w) => w.status === "approved")
@@ -727,7 +777,7 @@ async function api(req, res, u) {
     });
   }
   if (route === "/api/words" && method === "POST") {
-    const p = auth(req);
+    const p = await auth(req);
     if (!p) return json(res, 401, { error: "Please sign in" });
     if (!rate(req, "words", 5))
       return json(res, 429, {
@@ -769,7 +819,7 @@ async function api(req, res, u) {
       submittedBy: p.id,
     };
     db.words.push(word);
-    save();
+    await save();
     return json(res, 201, {
       status: "pending",
       submittedText: word.text,
@@ -778,7 +828,7 @@ async function api(req, res, u) {
     });
   }
   if (/^\/api\/words\/\d+\/(like|report)$/.test(route) && method === "POST") {
-    const p = auth(req);
+    const p = await auth(req);
     if (!p) return json(res, 401, { error: "Please sign in" });
     if (!rate(req, "vote", 15))
       return json(res, 429, { error: "Please slow down" });
@@ -803,7 +853,7 @@ async function api(req, res, u) {
       w.reports.push(p.id);
       if (w.reports.length >= 3) w.status = "review";
     }
-    save();
+    await save();
     return json(res, 200, {
       message:
         action === "like"
@@ -813,14 +863,16 @@ async function api(req, res, u) {
     });
   }
   if (route === "/api/admin/stats" && method === "GET") {
-    if (!admin(req)) return json(res, 403, { error: "Admin access denied" });
-    return json(res, 200, adminStats());
+    if (!(await admin(req)))
+      return json(res, 403, { error: "Admin access denied" });
+    return json(res, 200, await adminStats());
   }
   if (route === "/api/admin/words" && method === "GET") {
-    if (!admin(req)) return json(res, 403, { error: "Admin access denied" });
+    if (!(await admin(req)))
+      return json(res, 403, { error: "Admin access denied" });
     const senders = new Map(db.players.map((p) => [p.id, p]));
     return json(res, 200, {
-      stats: adminStats(),
+      stats: await adminStats(),
       words: db.words
         .map((w) => {
           const sender = senders.get(w.submittedBy);
@@ -841,7 +893,8 @@ async function api(req, res, u) {
     });
   }
   if (/^\/api\/admin\/words\/\d+$/.test(route) && method === "PATCH") {
-    if (!admin(req)) return json(res, 403, { error: "Admin access denied" });
+    if (!(await admin(req)))
+      return json(res, 403, { error: "Admin access denied" });
     const id = Number(route.split("/").pop()),
       b = await read(req),
       w = db.words.find((w) => w.id === id);
@@ -854,7 +907,7 @@ async function api(req, res, u) {
       wordId: id,
       status: b.status,
     });
-    save();
+    await save();
     return json(res, 200, { word: publicWord(w) });
   }
   return json(res, 404, { error: "Not found" });
@@ -916,5 +969,10 @@ server.headersTimeout = 10000;
 server.keepAliveTimeout = 5000;
 server.maxHeadersCount = 50;
 server.listen(PORT, () =>
-  console.log(`Gospel Explorers running at http://localhost:${PORT}`),
+  console.log(`Gospel Explorers running at ${process.env.APP_ORIGIN}`),
 );
+}
+start().catch((error) => {
+  console.error("Server startup failed:", error);
+  process.exitCode = 1;
+});
