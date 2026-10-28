@@ -717,3 +717,71 @@ test("inactive-account cleanup and online SQLite backup", async () => {
     rmSync(data, { recursive: true, force: true });
   }
 });
+
+test("Turso-compatible client persists application data across restarts", async () => {
+  const data = mkdtempSync(path.join(tmpdir(), "explorers-turso-client-")),
+    databaseUrl = "file:" + path.join(data, "remote.db"),
+    port = 54000 + Math.floor(Math.random() * 1000),
+    base = `http://127.0.0.1:${port}`,
+    key = "turso-adapter-test-admin-key-long-enough";
+  let child;
+  async function start() {
+    child = spawn(process.execPath, ["server.js"], {
+      cwd: path.join(__dirname, ".."),
+      env: {
+        ...process.env,
+        PORT: String(port),
+        DATA_DIR: path.join(data, "local"),
+        TURSO_DATABASE_URL: databaseUrl,
+        TURSO_AUTH_TOKEN: "test-token",
+        ADMIN_KEY: key,
+        WARDS: "Test Ward",
+        NODE_ENV: "test",
+      },
+      stdio: "pipe",
+    });
+    let error = "";
+    child.stderr.on("data", (chunk) => (error += chunk));
+    for (let i = 0; i < 100; i++) {
+      if (child.exitCode !== null) throw Error(error || "Server exited");
+      try {
+        const response = await fetch(base + "/api/health");
+        if (response.ok) return;
+      } catch {
+        await delay(50);
+      }
+    }
+    throw Error("Turso-compatible server did not start: " + error);
+  }
+  async function stop() {
+    if (child && child.exitCode === null) {
+      const exited = once(child, "exit");
+      child.kill();
+      await exited;
+    }
+  }
+  try {
+    await start();
+    const registration = await fetch(base + "/api/register", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        nickname: "Persistent",
+        age: "6-8",
+        ward: "Test Ward",
+        acknowledged: true,
+      }),
+    });
+    assert.equal(registration.status, 201);
+    const cookie = registration.headers.get("set-cookie").split(";")[0],
+      registered = await registration.json();
+    await stop();
+    await start();
+    const me = await fetch(base + "/api/me", { headers: { cookie } });
+    assert.equal(me.status, 200);
+    assert.equal((await me.json()).player.id, registered.player.id);
+  } finally {
+    await stop();
+    rmSync(data, { recursive: true, force: true });
+  }
+});

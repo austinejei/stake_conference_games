@@ -27,7 +27,7 @@ Open registration requires a family participation acknowledgement. Under-13 part
 
 New words require human approval. Three participants’ reports hide a word for review. Moderators sign in at /admin for one hour and can approve/hide/review words or inspect the complete word list in a searchable table with 20 rows per page. Sender nickname, age range and optional ward are shown only to authenticated moderators. Submission receipts tell players when a word has been sent for review. The admin key is never embedded in public pages.
 
-SQLite persists application state and hashed sessions. Existing `data/store.json` is imported on first startup; corrupt existing data stops startup. Keep the entire data directory, `.env`, backups and recovery codes private. Retention and account deletion are logical application operations; operators must also manage backup retention and deletion reconciliation after restore.
+By default, local SQLite persists application state and hashed sessions. To use Turso instead, set both `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`; the app creates its `state` and `sessions` tables on startup. If only one variable is set, startup stops with an error. Existing `data/store.json` is imported only for local SQLite. To copy an existing SQLite database into an empty Turso database, back up first, stop the app, and run `node ops/migrate-to-turso.js`; set `LOCAL_DB_PATH` if the source is not `data/stake-quest.sqlite`. Keep the database URL, token, `.env`, backups and recovery codes private. Retention and account deletion are logical application operations; operators must also manage backup retention and deletion reconciliation after restore.
 
 ## Validation and deployment
 
