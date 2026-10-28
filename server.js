@@ -9,12 +9,12 @@ const PORT = Number(process.env.PORT || 3000),
 const production = process.env.NODE_ENV === "production";
 if (production && ADMIN_KEY.length < 32)
   throw Error("Set ADMIN_KEY to at least 32 characters for production");
-// if (
-//   production &&
-//   (!process.env.APP_ORIGIN ||
-//     new URL(process.env.APP_ORIGIN).protocol !== "https:")
-// )
-//   throw Error("Set APP_ORIGIN to your public HTTPS origin for production");
+if (
+  production &&
+  (!process.env.APP_ORIGIN ||
+    new URL(process.env.APP_ORIGIN).protocol !== "https:")
+)
+  throw Error("Set APP_ORIGIN to your public HTTPS origin for production");
 const root = path.join(__dirname, "public"),
   store = path.join(
     process.env.DATA_DIR || path.join(__dirname, "data"),
