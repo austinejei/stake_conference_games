@@ -2,7 +2,12 @@
 const { test } = require("node:test"),
   assert = require("node:assert/strict");
 const { conferenceState } = require("../lib/conference");
-const { makeChallenge, publicPuzzle, checkAnswer } = require("../lib/games");
+const {
+  makeChallenge,
+  publicPuzzle,
+  checkAnswer,
+  crosswordHint,
+} = require("../lib/games");
 test("conference transitions use Ghana time with exclusive session ends", () => {
   for (const [time, mode] of [
     ["2026-10-31T10:59:59Z", "free"],
@@ -206,4 +211,24 @@ test("Primary children receive smaller puzzles and age-appropriate crossword sup
         assert.equal(p.showWordBank, false);
       } else assert.ok(p.clues.length <= 6);
     }
+});
+test("crossword hints reveal only the next missing or incorrect letter", () => {
+  const puzzle = makeChallenge("crossword", "18-35", 0),
+    clue = puzzle.clues[0],
+    answers = {};
+  for (let i = 0; i < clue.length; i++) {
+    const row = clue.row + (clue.direction === "down" ? i : 0),
+      col = clue.col + (clue.direction === "across" ? i : 0),
+      letter = puzzle.solution[row][col];
+    answers[`${row},${col}`] = i === 0 ? "?" : letter;
+  }
+  const hint = crosswordHint(puzzle, clue.number, clue.direction, answers);
+  assert.deepEqual(hint, {
+    row: clue.row,
+    col: clue.col,
+    letter: puzzle.solution[clue.row][clue.col],
+  });
+  answers[`${clue.row},${clue.col}`] = hint.letter;
+  assert.equal(crosswordHint(puzzle, clue.number, clue.direction, answers), null);
+  assert.equal(crosswordHint(puzzle, clue.number, "diagonal", answers), null);
 });

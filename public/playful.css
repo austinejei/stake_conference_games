@@ -842,25 +842,76 @@ body:has(.share-dialog[open]) {
 }
 
 
-/* --- CROSSWORD MOBILE TOOLTIP --- */
-.mobile-clue-tooltip {
-  display: none;
-  background: #23372e; 
-  color: #fff;
-  padding: 12px 16px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  text-align: center;
-  position: sticky;
-  top: 10px;
-  z-index: 10;
-  box-shadow: 0 5px 12px #26324a40;
-}
-
+/* --- CROSSWORD MOBILE TOOLTIP & HINTS --- */
 @media (max-width: 750px) {
-  .mobile-clue-tooltip:not(:empty) {
+  /* 1. Hide the original clue lists on mobile */
+  .clue-lists {
+    display: none !important;
+  }
+
+  .crossword-header-actions .crossword-mobile-info {
     display: block;
   }
+
+  .crossword-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .crossword-mobile-info {
+    position: relative;
+  }
+
+  /* 2. Style the floating tooltip so it's always visible */
+  .mobile-clue-tooltip:not(:empty) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: fixed; /* Fixed to the screen, immune to scrolling/overflow */
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    background: #183f35;
+    color: #fff;
+    padding: 14px 18px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.4;
+    z-index: 9999; /* Guarantees it stays above the game board */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Keep it hidden completely on desktop or when empty */
+.mobile-clue-tooltip,
+.mobile-clue-tooltip:empty {
+  display: none;
+}
+
+.crossword-mobile-info {
+  display: none;
+}
+
+.tooltip-info-icon {
+  flex-shrink: 0;
+  padding: 0;
+  min-height: 24px;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  background: #507563;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: ui-monospace, monospace;
+}
+
+button.tooltip-info-icon:hover {
+  transform: none;
+  box-shadow: none;
 }

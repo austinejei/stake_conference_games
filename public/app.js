@@ -257,7 +257,30 @@ async function openGame(game) {
       box.hidden = true;
       box.replaceChildren();
     };
-    top.append(title, close);
+    if (game === "crossword" && !d.complete) {
+      const info = make("div", "crossword-mobile-info"),
+        infoButton = make("button", "tooltip-info-icon", "i");
+      infoButton.type = "button";
+      infoButton.setAttribute("aria-label", "Reveal a letter hint");
+      infoButton.title =
+        "Reveal one correct letter in the selected answer; no points are deducted.";
+      infoButton.onclick = async () => {
+        infoButton.disabled = true;
+        try {
+          text(status, (await answer.hint()).message);
+        } catch (error) {
+          text(status, error.message);
+        } finally {
+          infoButton.disabled = false;
+        }
+      };
+      info.append(infoButton);
+      const actions = make("div", "crossword-header-actions");
+      actions.append(info, close);
+      top.append(title, actions);
+    } else {
+      top.append(title, close);
+    }
     box.appendChild(top);
     if (d.complete) {
       box.appendChild(
@@ -273,6 +296,13 @@ async function openGame(game) {
     const board = make("div", "game-board");
     box.appendChild(board);
     const answer = ExplorerGames.render(d, board, {
+        crosswordHint: ({ clueNumber, direction, answer }) =>
+          api("/api/crossword/hint", "POST", {
+            level: d.level,
+            clueNumber,
+            direction,
+            answer,
+          }),
         checkMatch: (left, right) =>
           api("/api/match/check", "POST", { level: d.level, left, right }),
       }),
@@ -284,38 +314,54 @@ async function openGame(game) {
     controls.append(submit, status);
     box.appendChild(controls);
 
+    
+    // --- CROSSWORD MOBILE CLUE TOOLTIP ---
+    // --- CROSSWORD MOBILE TOOLTIP ---
     if (game === "crossword") {
-      // Create the tooltip container using your existing 'make' helper
-      const tooltip = make("div", "mobile-clue-tooltip");
-      board.prepend(tooltip);
+      // Append directly to the body so 'position: fixed' works perfectly
+      let tooltip = document.getElementById("mobileTooltip");
+      if (!tooltip) {
+        tooltip = make("div", "mobile-clue-tooltip");
+        tooltip.id = "mobileTooltip";
+        document.body.appendChild(tooltip);
+      }
 
-      // Attach focus listeners to dynamically rendered crossword inputs
-      board.querySelectorAll("input").forEach((input) => {
-        input.addEventListener("focus", () => {
-          // Extract row and col coordinates. CheckAnswer uses string formats like "0,1".
-          const match = (input.name || input.id || "").match(/(\d+)[^\d]+(\d+)/);
-          const r = match ? parseInt(match[1]) : parseInt(input.dataset.row);
-          const c = match ? parseInt(match[2]) : parseInt(input.dataset.col);
-
-          if (!isNaN(r) && !isNaN(c)) {
-            // Find the intersecting clue from the puzzle object (d.clues)
-            const activeClue = d.clues.find((clue) => {
-              const isDown = clue.direction === "down" && c === clue.col && r >= clue.row && r < clue.row + clue.length;
-              const isAcross = clue.direction === "across" && r === clue.row && c >= clue.col && c < clue.col + clue.length;
-              return isDown || isAcross;
-            });
-            
-            if (activeClue) {
-              tooltip.textContent = `${activeClue.number}. ${activeClue.clue}`;
-            }
-          }
-        });
+      board.addEventListener("focusin", (e) => {
+        if (e.target.tagName !== "INPUT") return;
         
-        // Clear the tooltip when the user taps away
-        input.addEventListener("blur", () => {
-          tooltip.textContent = "";
+        const match = (e.target.name || e.target.id || "").match(/(\d+),(\d+)/);
+        if (!match) return;
+        
+        const r = parseInt(match[1], 10);
+        const c = parseInt(match[2], 10);
+        
+        const activeClues = d.clues.filter(clue => {
+          if (clue.direction === "across") return r === clue.row && c >= clue.col && c < clue.col + clue.length;
+          if (clue.direction === "down") return c === clue.col && r >= clue.row && r < clue.row + clue.length;
+          return false;
         });
+
+        if (activeClues.length > 0) {
+          const cluesText = activeClues.map(cl => 
+            `<strong>${cl.number}${cl.direction === 'across' ? 'A' : 'D'}:</strong> ${cl.clue}`
+          ).join("<br>");
+          
+          tooltip.innerHTML = `<div class="tooltip-info-icon">i</div> <div>${cluesText}</div>`;
+        }
       });
+
+      board.addEventListener("focusout", () => {
+        setTimeout(() => {
+          if (!board.querySelector("input:focus")) tooltip.innerHTML = "";
+        }, 100);
+      });
+
+      // Clear the tooltip when the game is closed
+      const oldDispose = disposeGame;
+      disposeGame = () => {
+        if (tooltip) tooltip.innerHTML = "";
+        oldDispose?.();
+      };
     }
 
     submit.onclick = async () => {

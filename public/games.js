@@ -31,7 +31,8 @@ window.ExplorerGames = {
       board.setAttribute("aria-label", "Crossword grid");
       const inputs = new Map(),
         labels = new Map();
-      let direction = "across";
+      let direction = "across",
+        selectedClue = null;
       function wordCells(clue) {
         return Array.from(
           { length: clue.length },
@@ -44,6 +45,7 @@ window.ExplorerGames = {
           clue = clues.find((c) => c.direction === direction) || clues[0];
         if (!clue) return;
         direction = clue.direction;
+        selectedClue = clue;
         for (const [id, input] of inputs)
           input.parentElement.classList.toggle(
             "word-active",
@@ -77,6 +79,7 @@ window.ExplorerGames = {
               cell.appendChild(make("span", "cell-number", start.number));
             const input = make("input");
             input.maxLength = 1;
+            input.name = `${r},${c}`;
             if (p.givens?.[`${r},${c}`]) {
               input.value = p.givens[`${r},${c}`];
               input.readOnly = true;
@@ -186,6 +189,37 @@ window.ExplorerGames = {
         Object.fromEntries(
           [...inputs].map(([key, input]) => [key, input.value]),
         );
+      answer.hint = async () => {
+        const clue = selectedClue;
+        if (!clue)
+          return {
+            message: "Tap a square in the answer you want a hint for.",
+          };
+        if (typeof options.crosswordHint !== "function")
+          throw Error("Hints are unavailable right now.");
+        const hint = await options.crosswordHint({
+          clueNumber: clue.number,
+          direction: clue.direction,
+          answer: answer(),
+        });
+        if (hint.complete)
+          return { message: "That answer is already complete." };
+        const key = `${hint.row},${hint.col}`,
+          input = inputs.get(key);
+        if (
+          !wordCells(clue).includes(key) ||
+          !input ||
+          input.readOnly ||
+          typeof hint.letter !== "string" ||
+          !/^[a-z]$/i.test(hint.letter)
+        )
+          throw Error("Could not apply that hint. Please try again.");
+        input.value = hint.letter.toUpperCase();
+        input.oninput?.();
+        return {
+          message: `Hint: one letter in ${clue.number} ${clue.direction} was revealed. No points were deducted.`,
+        };
+      };
     } else if (p.type === "wordsearch") {
       const board = make("div", "wordsearch-board");
       board.style.setProperty("--cols", p.grid.length);
