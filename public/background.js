@@ -1,8 +1,7 @@
 "use strict";
 (() => {
-  const sky = document.getElementById("gospelSky"),
-    button = document.getElementById("toggleBackground");
-  if (!sky || !button) return;
+  const sky = document.getElementById("gospelSky");
+  if (!sky) return;
   // Living leaders checked against the October 2026 sustaining presentation.
   // https://www.churchofjesuschrist.org/study/general-conference/2026/10/11christofferson?lang=eng
   const tokens = [
@@ -25,10 +24,6 @@
     ["icon", "scriptures"],
     ["name", "Daniel"],
   ];
-  let paused = false;
-  try {
-    paused = localStorage.getItem("explorers:background-paused") === "true";
-  } catch {}
   const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
   tokens.forEach(([kind, value], i) => {
     const e = document.createElement("span");
@@ -53,28 +48,11 @@
       reduced = preference.matches;
     document.body.classList.toggle(
       "background-paused",
-      paused || quiet || reduced || document.hidden,
+      quiet || reduced || document.hidden,
     );
-    button.disabled = quiet || reduced;
-    button.setAttribute("aria-pressed", String(paused || quiet || reduced));
-    button.textContent = quiet
-      ? "Background paused for listening"
-      : reduced
-        ? "Motion reduced"
-        : paused
-          ? "Play background"
-          : "Pause background";
   }
-  button.onclick = () => {
-    paused = !paused;
-    try {
-      localStorage.setItem("explorers:background-paused", String(paused));
-    } catch {}
-    apply();
-  };
   const observer = new MutationObserver(() => {
-    const quiet = document.body.classList.contains("quiet-mode");
-    if (quiet !== button.disabled && !preference.matches) apply();
+    apply();
   });
   observer.observe(document.body, {
     attributes: true,
